@@ -13,13 +13,9 @@
   <link rel="shortcut icon" href="../assets/images/favicon.ico" />
 
   <!-- css for table-data -->
-  <!-- <link rel="stylesheet" type="text/css" href="CSS/dataTables.bootstrap4.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="CSS/dataTables.bootstrap4.min.css">
 
-  <!-- CSS DataTables -->
-  <link rel="stylesheet" type="text/css" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css">
-
-
-  <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
 </head>
 
@@ -110,6 +106,12 @@
             <i class="mdi mdi-clipboard-text menu-icon"></i>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="mise_a_jour.php">
+            <span class="menu-title">Mise à jour</span>
+            <i class="mdi mdi-sync menu-icon"></i>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- partiel -->
@@ -133,17 +135,9 @@
 
 
     <!-- JS for table-data -->
-    <!-- <script src="JS/jquery-3.5.1.min.js"></script>
+    <script src="JS/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="JS/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="JS/dataTables.bootstrap4.min.js"></script> -->
-
-
-    <!-- jQuery -->
-    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
-
-    <!-- DataTables JavaScript -->
-    <script type="text/javascript" src="../node_modules/datatables.net/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script type="text/javascript" charset="utf8" src="JS/dataTables.bootstrap4.min.js"></script>
 
     <script>
       $(document).ready(function() {
