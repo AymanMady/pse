@@ -1,0 +1,95 @@
+Voici un résumé des éléments importants en Node.js :
+
+npm install connect-flash express nodemon mysql express-session
+
+npm install express-session@latest
+
+Installez les modules nécessaires pour importer dee fichier excel:
+
+Assurez-vous d'avoir installé les modules suivants en utilisant la commande npm install :
+
+npm install express : Pour créer le serveur et les routes.
+npm install multer : Pour gérer l'upload de fichiers.
+npm install xlsx : Pour lire les fichiers Excel.
+
+
+npm install nodemailer nodemailer-sendmail-transport
+
+
+###        npm install sweetalert2   ###ss
+
+
+Les sessions :::::
+
+npm init -y
+
+######   npm install express express-session body-parser   #####
+
+
+npm install bootstrap
+
+
+npm install jquery
+
+npx nodemon app.js
+
+Bcrypt (pour le cryptage des mots de passe) :
+
+npm install bcrypt
+
+
+Nodemailer (pour l'envoi d'e-mails) :
+
+npm install nodemailer
+
+
+Express-session (pour la gestion des sessions) :
+
+npm install express-session
+
+
+uuid (pour la génération d'identifiants uniques) :
+
+npm install uuid
+
+
+MySQL2 (pour la connexion à la base de données MySQL) :
+
+npm install mysql2
+
+
+npm install body-parser
+
+
+npm install express bcrypt nodemailer uuid express-session mysql2 body-parser
+
+
+
+1. **package.json** : Fichier de configuration du projet avec les métadonnées et les dépendances.
+
+2. **npm (Node Package Manager)** : Gestionnaire de paquets pour installer, mettre à jour et gérer les dépendances.
+
+3. **Modules intégrés (Core Modules)** : Modules internes de Node.js pour des fonctionnalités de base.
+
+4. **Express.js** : Framework web pour créer des applications web et des API.
+
+5. **Routes** : Définition de chemins URL et de fonctions de rappel pour gérer les requêtes.
+
+6. **Middlewares** : Fonctions qui s'exécutent entre les requêtes et les réponses pour des traitements communs.
+
+7. **EJS (Embedded JavaScript)** : Moteur de template pour créer des pages web dynamiques.
+
+8. **MySQL** : Système de gestion de base de données relationnelle.
+
+9. **Fichiers de routes** : Fichiers séparés pour définir les routes de l'application.
+
+10. **Fichiers de vues** : Fichiers avec l'extension .ejs pour créer des pages HTML dynamiques avec EJS.
+
+En combinant ces éléments, vous pouvez développer des applications Node.js performantes et flexibles, avec une gestion de base de données, des pages web dynamiques et des fonctionnalités de routage avancées.
+
+
+
+
+
+
+

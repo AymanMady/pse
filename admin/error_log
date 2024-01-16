@@ -1,0 +1,12 @@
+[13-Jan-2024 10:59:12 America/New_York] PHP Notice:  Undefined index: email in /home/chahztvt/public_html/pse/admin/acceuil.php on line 3
+[13-Jan-2024 10:59:12 America/New_York] PHP Notice:  Undefined index: role in /home/chahztvt/public_html/pse/admin/acceuil.php on line 4
+[15-Jan-2024 09:52:11 America/New_York] PHP Notice:  Undefined index: module in /home/chahztvt/public_html/pse/admin/modifier_matiere.php on line 185
+[15-Jan-2024 11:08:08 America/New_York] PHP Notice:  Undefined index: module in /home/chahztvt/public_html/pse/admin/modifier_matiere.php on line 185
+[15-Jan-2024 18:11:11 America/New_York] PHP Notice:  Undefined index: email in /home/chahztvt/public_html/pse/admin/utilisateurs.php on line 5
+[15-Jan-2024 18:11:11 America/New_York] PHP Notice:  Undefined index: role in /home/chahztvt/public_html/pse/admin/utilisateurs.php on line 6
+[15-Jan-2024 18:11:21 America/New_York] PHP Notice:  Undefined index: email in /home/chahztvt/public_html/pse/admin/ajouter_utilisateur.php on line 3
+[15-Jan-2024 18:11:21 America/New_York] PHP Notice:  Undefined index: role in /home/chahztvt/public_html/pse/admin/ajouter_utilisateur.php on line 4
+[16-Jan-2024 07:25:51 America/New_York] PHP Notice:  Undefined index: email in /home/chahztvt/public_html/pse/admin/acceuil.php on line 3
+[16-Jan-2024 07:25:51 America/New_York] PHP Notice:  Undefined index: role in /home/chahztvt/public_html/pse/admin/acceuil.php on line 4
+[16-Jan-2024 07:26:05 America/New_York] PHP Notice:  Undefined index: email in /home/chahztvt/public_html/pse/admin/acceuil.php on line 3
+[16-Jan-2024 07:26:05 America/New_York] PHP Notice:  Undefined index: role in /home/chahztvt/public_html/pse/admin/acceuil.php on line 4
