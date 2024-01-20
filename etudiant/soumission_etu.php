@@ -252,9 +252,11 @@ $row = mysqli_fetch_assoc($req);
             $sql = "select * from reponses where id_sous = '$id_sous' and id_etud = (select id_etud from etudiant where email = '$email') ";
             $req = mysqli_query($conn, $sql);
             $row = mysqli_fetch_assoc($req);
-            $req_detail2 = "SELECT  `autoriser`  FROM soumission , demande  WHERE soumission.id_sous = $id_sous and (status=0 or status=1)  and soumission.id_sous = demande.id_sous and demande.id_etud = (select id_etud from etudiant where email = '$email') and autoriser = 1 ";
+            $req_detail2 = "SELECT  `autoriser`,`id_type_sous`  FROM soumission , demande  WHERE soumission.id_sous = $id_sous and (status=0 or status=1)  and soumission.id_sous = demande.id_sous and demande.id_etud = (select id_etud from etudiant where email = '$email') and autoriser = 1 ";
             $req2 = mysqli_query($conn, $req_detail2);
             $row2 = mysqli_fetch_assoc($req2);
+            $row6 = mysqli_fetch_assoc($req3);
+
 
 
 
@@ -271,11 +273,15 @@ $row = mysqli_fetch_assoc($req);
                     ?>
                         <?php
                         if ($row['confirmer'] ==  1) {
-                        ?>
-                            <p>
-                                <a href="demande_modifier.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Demande de faire une modification</a>
-                            </p>
-                        <?php
+                            if($row6['id_type_sous']==3){
+                                ?> <p>
+                                    <a href="demande_modifier.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Demande de faire une modification</a>
+                                </p>
+                                <?php
+                                }
+                                else{
+                                    echo "";
+                                }
                         } else {
                             $_SESSION['autorisation'] = true;
                         ?>
