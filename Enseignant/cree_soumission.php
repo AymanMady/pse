@@ -94,8 +94,11 @@ if (isset($_POST['button'])) {
                         // $req_tou = mysqli_query($conn, $sql_tou);
                         $_SESSION['ajout_reussi'] = true;
 
-                        header("location:soumission_en_ligne.php");
-                    }
+                        if (isset($_GET['id_matiere'])) {
+                            header("location:soumission_par_matiere.php");
+                        } else {
+                            header("location:soumission_en_ligne.php");
+                        }                    }
                 }
             }
         }
@@ -145,12 +148,24 @@ include "nav_bar.php";
                     <div class="form-group">
                         <label>Matière</label>
                         <div class="col-md-12">
+                            <?php if(isset($_GET['id_matiere'])){
+                           ?>
+
+                            <select class="form-control" id="academic" value="Semesters" name="matiere">
+                                    <option value="<?= $_GET['id_matiere'] ?>"><?= $_SESSION['libelle'] ?> </option>
+                            </select>
+                            <?php
+                          
+                            }
+                            else{
+                            ?>
                             <select class="form-control" id="academic" value="Semesters" name="matiere">
                                 <option selected disabled> Matière </option>
                                 <?php while ($row = mysqli_fetch_assoc($semestre_qry)) : ?>
                                     <option value="<?= $row['id_matiere']; ?>"><?= $row['code']; ?> <?= $row['libelle']; ?> </option>
                                 <?php endwhile; ?>
                             </select>
+                            <?php }?>
                         </div>
                     </div>
                     <div class="form-group">

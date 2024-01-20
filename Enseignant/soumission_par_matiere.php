@@ -111,7 +111,7 @@ $type_sous_qry = mysqli_query($conn, $type_sous);
                     <img src="../assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
                     <h4 class="mb-5"><?=$row_mat['libelle']." "?></h4>
                     <h6 class="click" ></h6>
-                    <div class="md-2">
+                    <h6 class="card-img-absolute m-4 p-2 outline" ><a href="cree_soumission.php?id_matiere=<?php echo $id_matiere?>">Créer une soumission</a></h6>
                     </div>
                     
                   </div>

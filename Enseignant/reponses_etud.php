@@ -184,6 +184,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Execute the SQL update query
         $sqlUpdate = "UPDATE reponses SET note = $newNoteValue WHERE id_rep = $rep";
         $resulttt = mysqli_query($conn, $sqlUpdate);
+        // echo '<script>window.location.href = "consiltation_de_reponse.php?id_rep=' . $id_rep . '";</script>';
+        echo '<script>window.location.href = "reponses_etud.php?id_matiere=' . $id_matiere . '&id_sous=' . $id_sous . '";</script>';
+        
+
+
        
 
    

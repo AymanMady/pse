@@ -54,13 +54,13 @@ $id_semestre = $_GET['id_semestre'];
 
 
         <?php
-            $enline = "outline-dark";
+            $enline = "dark";
             $cloture = "outline-dark";
             
             date_default_timezone_set('GMT');
             $date = date('Y-m-d H:i:s');
 
-            $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status in (1,0) and date_debut <= '$date' ";
+            $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status in (0,0) and date_debut <= '$date' ";
 
             if (isset($_POST['cloture'])) {
                 $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and  status=1";
