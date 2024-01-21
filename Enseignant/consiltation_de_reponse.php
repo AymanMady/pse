@@ -139,7 +139,7 @@ $id_sous = $row["id_sous"];
                                 <?php
                                 } else {
                                 ?>
-                                    <a class="btn btn-inverse-info btn-sm" title="Les fichiers d'extension pdf sont les seuls que vous pouvez visualiser 😒😒.">Visualiser</a>
+                                    <a class="btn btn-inverse-info btn-sm" title="Les fichiers d'extension pdf sont les seuls que vous pouvez visualiser .">Visualiser</a>
                                 <?php
                                 }
                                 ?>
