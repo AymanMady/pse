@@ -180,12 +180,7 @@ if ($_SESSION["role"] == "ens") {
       <script type="text/javascript" src="../node_modules/datatables.net/js/jquery.dataTables.js"></script>
       <script type="text/javascript" src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
 
-      <script>
-        $(document).ready(function() {
-          $('#example').DataTable();
-        });
-      </script>
-
+ 
       <!-- end JS for table-data -->
     <?php
 
