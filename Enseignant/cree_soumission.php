@@ -1,4 +1,4 @@
-<?php
+ <?php
 session_start();
 $email = $_SESSION['email'];
 if ($_SESSION["role"] != "ens") {
@@ -30,7 +30,7 @@ function test_input($data)
 
 if (isset($_POST['button'])) {
     $ali = mysqli_query($conn, "select now()");
-    $id_matiere = test_input($_POST['matiere']);
+     $id_matiere = test_input($_POST['matiere']);
     $date_debut = test_input($_POST['debut']);
     $date_fin = test_input($_POST['fin']);
     $type = test_input($_POST['type']);
@@ -71,7 +71,7 @@ if (isset($_POST['button'])) {
                 if ($file_error === 0) {
                     $new_file_name = uniqid('', true) . '.' . $file_ext;
 
-                    $sql3 = "SELECT code FROM matiere WHERE matiere.id_matiere = '$id_matiere'";
+                    $sql3 = "SELECT code FROM matiere WHERE id_matiere = $id_matiere";
                     $code_matiere_result = mysqli_query($conn, $sql3);
                     $row = mysqli_fetch_assoc($code_matiere_result);
                     $code_matire = $row['code'];
@@ -90,11 +90,44 @@ if (isset($_POST['button'])) {
                     $sql2 = "INSERT INTO `fichiers_soumission` (`id_sous`, `nom_fichier`, `chemin_fichier`) VALUES ($id_sous, '$file_name', '$destination')";
                     $req2 = mysqli_query($conn, $sql2);
                     if ($req1 and $req2) {
+
                         // $sql_tou = "SELECT * FROM `inscription` WHERE inscription.id_matiere='$id_matiere'";
                         // $req_tou = mysqli_query($conn, $sql_tou);
-                        $_SESSION['ajout_reussi'] = true;
+                        // while ($row_tou = mysqli_fetch_assoc($req_tou)) {
+                        //     $id_etud = $row_tou['id_etud'];
+                        //     $sql_tout = "SELECT * FROM `etudiant` where id_etud=$id_etud";
+                        //     $req_tout = mysqli_query($conn, $sql_tout);
+                        //     $row_tout = mysqli_fetch_assoc($req_tout);
+                        //     $subject = "Nouvelle annonce :  $titre ";
 
-                        header("location:soumission_en_ligne.php");
+                        //     $message = " $descri \n\n De $date_debut_justifie  à  $date_fin_justifie" ;
+                        
+                        //     $url =  "https://script.google.com/macros/s/AKfycbz1KWjBC8wx3Ay9fYYg6pW_1dcS-07rYT07Xxq0SscKOgUXpiPcq5zqgfTsR7PZFr4j/exec";
+                        //     $ch = curl_init($url);
+                        //     curl_setopt_array($ch, [
+                        //         CURLOPT_RETURNTRANSFER => true,
+                        //         CURLOPT_FOLLOWLOCATION => true,
+                        //         CURLOPT_POSTFIELDS => http_build_query([
+                        //             "recipient" => $row_tout['matricule'],
+                        //             "subject"   => $subject,
+                        //             "body"      => $message
+                        //         ])
+                        //     ]); 
+
+                        //     $result = curl_exec($ch);
+                        // }
+                        
+                        // if ($result) {
+                           
+                        // }
+
+                        $_SESSION['ajout_reussi'] = true;
+                    
+                        if (isset($_GET['id_matiere'])) {
+                            header("location:soumission_par_matiere.php");
+                        } else {
+                            header("location:soumission_en_ligne.php");
+                        }
                     }
                 }
             }
@@ -143,14 +176,26 @@ include "nav_bar.php";
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Matière</label>
+                        <label>Matière : </label>
                         <div class="col-md-12">
+                            <?php if(isset($_GET['id_matiere'])){
+                           ?>
+
+                            <select class="form-control" id="academic" value="Semesters" name="matiere">
+                                    <option value="<?= $_GET['id_matiere'] ?>"><?= $_SESSION['libelle'] ?> </option>
+                            </select>
+                            <?php
+                          
+                            }
+                            else{
+                            ?>
                             <select class="form-control" id="academic" value="Semesters" name="matiere">
                                 <option selected disabled> Matière </option>
                                 <?php while ($row = mysqli_fetch_assoc($semestre_qry)) : ?>
                                     <option value="<?= $row['id_matiere']; ?>"><?= $row['code']; ?> <?= $row['libelle']; ?> </option>
                                 <?php endwhile; ?>
                             </select>
+                            <?php }?>
                         </div>
                     </div>
                     <div class="form-group">

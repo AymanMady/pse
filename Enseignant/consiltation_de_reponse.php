@@ -139,7 +139,7 @@ $id_sous = $row["id_sous"];
                                 <?php
                                 } else {
                                 ?>
-                                    <a class="btn btn-inverse-info btn-sm" title="Les fichiers d'extension pdf sont les seuls que vous pouvez visualiser 😒😒.">Visualiser</a>
+                                    <a class="btn btn-inverse-info btn-sm" title="Les fichiers d'extension pdf sont les seuls que vous pouvez visualiser .">Visualiser</a>
                                 <?php
                                 }
                                 ?>
@@ -156,30 +156,82 @@ $id_sous = $row["id_sous"];
                                 <blockquote class="blockquote blockquote-info" style="border-radius:7px;width:130px;padding:10px;">
                                 <h4  style='font-size: 20px;'><strong>Note</strong></h4>
                                 <?php
-                                if ($row['note'] != NULL) {
-                                    echo "<center><b style='font-size: 20px;'>" . $row['note'] . " /20</b></center>";
-                                }
+                                
                                 ?>
                                 <?php
+
                                 $sql3 = "select * from reponses where id_rep='$id_rep' ";
                                 $req3 = mysqli_query($conn, $sql3);
                                 $row3 = mysqli_fetch_assoc($req3);
-                                if ($row3['note'] > 0) {
+                                if ($row3['confirmer']==0) {
                                 ?>
-                                    <a href="affecte_une_note.php?id_etud=<?= $id_rep ?>" class="btn btn-inverse-info btn-sm ms-4">Modifier</a>
-                                <?php
+                                
+                                      <center><p class="btn btn-inverse-info  p-1 m-1">en attent de <br>confirmation </p></center>
+                                   
+                                
+                                    <?php
+                               
                                 } else {
-                                    if($row3['confirmer']==0){
-                                        ?>
-                                    <a href="#" class="btn btn-inverse-warning btn-sm ">En attente de confirmation</a>
-                                         <?php
+                                    if($row3['note'] > 0){
+
+
+                                        ?> <form method="post" action="">
+                                        <center><input type="number"  step="0.01" name="note" style="font-size: 20px;width:60px"value="<?php echo $row['note'] ?>" >/20</center>
+                                          <center><input type="submit" name="sub_note" value="modifier" class="btn btn-inverse-info  p-1 m-1"></center>
+                                        </form><?php
+                                    if (isset($_POST['sub_note'])){
+                                        $note=$_POST['note'];
+                                        $sql_note = "UPDATE `reponses` SET note=$note WHERE id_rep=$id_rep";
+                                        $req_note = mysqli_query($conn, $sql_note);
+                                    }                                         
                                     }
                                     else{
+                                        ?>
+                                <form method="post" action="">
+                                    <center><input type="number"step="0.01" name="note" style="font-size: 20px;width:60px"value="<?php echo $row['note'] ?>" >/20</center>
+                                      <center><input type="submit" name="sub_note" value="notee" class="btn btn-inverse-info  p-1 m-1"></center>
+                                    </form>
+                                    <?php
                                     
                                 ?>
-                                    <a href="affecte_une_note.php?id_etud=<?= $id_rep ?>" class="btn btn-inverse-info btn-sm ">Noter</a>
+                                   
+                                   
+                                                                  
+                                   
+                                   
+                                   <!-- <form action="" method="POST">
+                                <div class="">
+                                    <div style="display:flex;justify-content:space-bettwen;">
+                                        <div class="col-md-2">
+                                            <input type="float" name="Note" style="font-size: 22px;" class="form-control" value="<?= $row3['note'] ?>">
+                                        </div>
+                                            <button type="submit" value="" name="fin" clas s="btn btn-inverse-info btn-sm p-0">Affecter</button>
+                                    </div>
+                            </form> -->
+                                   
+                                   <!-- <a href="affecte_une_note.php?id_etud=<?= $id_rep ?>" class="btn btn-inverse-info btn-sm ">Noter</a> -->
                                 <?php
                                 }}
+                                if (isset($_POST['sub_note'])){
+
+                                    $note=$_POST['note'];
+                                    if ($note>20 || $note<0){echo"<script>
+                                        Swal.fire({
+                                            title: 'Échec  !',
+                                            text: 'Veuillez donner une note entre 0 et 20 !',
+                                            icon: 'warning',
+                                            confirmButtonColor: '#3099d6',
+                                            confirmButtonText: 'OK'
+                                        });
+                                        </script>";}
+                                        else{
+                                    $sql_note = "UPDATE `reponses` SET note=$note WHERE id_rep=$id_rep";
+                                    $req_note = mysqli_query($conn, $sql_note);
+                                    if($req_note){
+                                        echo '<script>window.location.href = "consiltation_de_reponse.php?id_rep=' . $id_rep . '";</script>';
+                                    }}
+
+                                } 
                                 ?>
                             </blockquote>
                 </center>

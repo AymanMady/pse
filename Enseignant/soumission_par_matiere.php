@@ -107,15 +107,21 @@ $type_sous_qry = mysqli_query($conn, $type_sous);
     <div class="content">
         <div class="col-md-12 stretch-card grid-margin">
                 <div class="card bg-gradient-<?php echo $color ?> card-img-holder text-white">
+                
                   <div class="card-body ">
                     <img src="../assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                    <h4 class="mb-5"><?=$row_mat['libelle']." "?></h4>
-                    <h6 class="click" ></h6>
-                    <div class="md-2">
-                    </div>
+
                     
+                    <h4 class="mb-5"><?=$row_mat['libelle']." "?></h4>
+                    <h6 class="card-img-absolute m-4 p-2 outline" ><a href="cree_soumission.php?id_matiere=<?php echo $id_matiere?>"><i class="mdi mdi-plus-box-outline" style="font-size:80px"></i> </a></h6>
+                    
+                    <div class="md-2">
+
+                    </div>
                   </div>
+
                 </div>
+
               </div>
               <?php
             while($row=mysqli_fetch_assoc($req1)){
@@ -140,7 +146,11 @@ $type_sous_qry = mysqli_query($conn, $type_sous);
 
                         <p style="margin: 0%; " <?php if (strtotime($row['date_fin']) - time() <= 600) echo 'style="color: red;"'; ?>> De&nbsp;<?=$row['date_debut']?>&nbsp;à&nbsp;
                         <?php
-                          echo '<input type="datetime-local" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >';
+                          if ((strtotime($row['date_fin']) - time()) <= 600) {
+                            echo '<input type="datetime-local" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" class="text-danger" >';
+                          }else{
+                            echo '<input type="datetime-local" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >';
+                          }
                         ?>
                         </p> 
                       </div>
