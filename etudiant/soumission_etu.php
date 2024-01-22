@@ -17,6 +17,7 @@ include "nav_bar.php";
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="../JS/sweetalert2.js"></script>
+<link rel="stylesheet" href="CSS/cronometre.css">
 
 <?php
 include_once "../connexion.php";
@@ -78,7 +79,6 @@ if ($req_num_rep && $req_num_insc) {
     }
 }
 
-// ******  
 
 $req_detail = "SELECT * FROM soumission  WHERE id_sous = $id_sous and (status=0 or status=1)  ";
 $req = mysqli_query($conn, $req_detail);
@@ -88,15 +88,47 @@ $row = mysqli_fetch_assoc($req);
 
 ?>
 <div class="content-wrapper">
-    <div class="content">
+<div class="content" style="height:70px;">
 
-        <div class="page-header">
-            <h3 class="page-title">
-                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="mdi mdi-home"></i>
-                </span> <a href="choix_semestre.php">Accueil</a>  / <a href="index_etudiant.php?id_semestre=<?php echo  $id_semestre ?>"><?php echo "S" . $id_semestre ?></a>   / <a href="soumission_etu_par_matiere.php?id_semestre=<?php echo  $id_semestre ?>""><?php echo $_SESSION['nom_mat'] ?></a>  / <a href="#"><?php echo $row['titre_sous']; ?></a> 
-            </h3>
+<div class="page-header" style="height:100px;">
+    <div style="display:flex;justify-content:space-bettwen;width:100%;height:100px;" >
+        <div style="width:100%;">
+        <h3 class="page-title" >
+            <span class="page-title-icon bg-gradient-primary text-white me-2">
+                <i class="mdi mdi-home"></i>
+            </span> <a href="choix_semestre.php">Accueil</a>  / <a href="index_etudiant.php?id_semestre=<?php echo  $id_semestre ?>"><?php echo "S" . $id_semestre ?></a>   / <a href="soumission_etu_par_matiere.php?id_semestre=<?php echo  $id_semestre ?>""><?php echo $_SESSION['nom_mat'] ?></a>  / <a href="#"><?php echo $row['titre_sous']; ?></a> 
+        </h3>
+
         </div>
+
+
+        <div class="col-md-2 " style="width:300px ;height:100px">
+        <div class="card">
+            <div class="card-body " style="padding:30px">
+                <div class="countdown">
+                    <div class="box">
+                        <span class="num btn-gradient-info" id="days"></span>
+                        <span class="btn-gradient-info text">Jours</span>
+                    </div>
+                    <div class="box">
+                        <span class="num btn-gradient-info" id="hours"></span>
+                        <span class="btn-gradient-info text">Heurs</span>
+                    </div>
+                    <div class="box">
+                        <span class="num btn-gradient-info" id="minutes"></span>
+                        <span class="btn-gradient-info text">Minutes</span>
+                    </div>
+                    <div class="box">
+                        <span class="num btn-gradient-info" id="seconds"></span>
+                        <span class="btn-gradient-info text">Secondes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
 
     <div class="content">
         <div class="row">
@@ -132,7 +164,7 @@ $row = mysqli_fetch_assoc($req);
             <div class="col-md-6 grid-margin">
                 <div class="card">
                     <div class="card-body mb-4">
-                        <h2 class="card-title">L'annonce jointe pour la soumission.</h2>
+                        <h2 class="card-title">L'annonce jointe à la soumission:</h2>
                         <?php
 
                         if (strtotime(gmdate("Y-m-d H:i:s")) >= strtotime($row['date_fin'])) {
@@ -148,7 +180,7 @@ $row = mysqli_fetch_assoc($req);
                             <p><?php echo "<strong>Date de  fin : </strong>" . $row['date_fin']; ?></p>
                             <p><?php echo "<strong>Pour plus des informations : </strong>" . $row['person_contact']; ?></p>
                         </h4>
-                        <p class="card-title mt-4">Les fichier(s) de soumission.</p>
+                        <p class="card-title mt-4">Les fichier(s) de la soumission: </p>
                         <?php
                         $sql2 = "select * from fichiers_soumission where id_sous='$id_sous' ";
                         $req2 = mysqli_query($conn, $sql2);
@@ -192,7 +224,7 @@ $row = mysqli_fetch_assoc($req);
             <div class="col-md-6 grid-margin">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-title">Réponce de l'etudiant à cette soumission.</p>
+                        <p class="card-title">Votre Réponse :</p>
                         <?php
                         $sql2 = "SELECT * FROM fichiers_reponses, reponses, etudiant WHERE fichiers_reponses.id_rep = reponses.id_rep AND reponses.id_etud = etudiant.id_etud AND email = '$email' AND reponses.id_sous = '$id_sous';";
                         $req2 = mysqli_query($conn, $sql2);
@@ -353,3 +385,51 @@ $row = mysqli_fetch_assoc($req);
 </div>
 </div>
 </div>
+
+
+<?php
+    $sql = "select date_fin from soumission where id_sous = '$id_sous' ";
+    $req = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($req);
+    $endDate = date("M d, Y H:i:s", strtotime($row['date_fin']));
+?>
+
+<script>
+// Définir la date de fin du compte à rebours (format : "Mois Jour, Année Heures:Minutes:Secondes")
+const endDate = new Date("<?php echo $endDate; ?>").getTime();
+
+// Mettre à jour le compte à rebours chaque seconde
+const countdownInterval = setInterval(function() {
+  // Obtenir la date et l'heure actuelles
+  const now = new Date().getTime();
+
+  // Calculer la différence entre la date de fin et la date actuelle
+  const timeRemaining = endDate - now;
+
+  // Calculer les jours, heures, minutes et secondes restants
+  const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+  // Afficher le compte à rebours dans les éléments HTML avec les IDs correspondants
+  document.getElementById("days").innerHTML = formatTime(days) ;
+  document.getElementById("hours").innerHTML = formatTime(hours) ;
+  document.getElementById("minutes").innerHTML = formatTime(minutes) ;
+  document.getElementById("seconds").innerHTML = formatTime(seconds);
+
+  // Vérifier si le compte à rebours a atteint zéro
+  if (timeRemaining < 0) {
+    clearInterval(countdownInterval); // Arrêter le compte à rebours lorsque le temps est écoulé
+    document.getElementById("days").innerHTML = "00" ;
+    document.getElementById("hours").innerHTML = "00" ;
+    document.getElementById("minutes").innerHTML = "00" ;
+    document.getElementById("seconds").innerHTML = "00";
+  }
+}, 1000);
+
+// Fonction pour formater le temps avec un zéro en ajoutant un zéro devant les chiffres inférieurs à 10
+function formatTime(time) {
+  return time < 10 ? "0" + time : time;
+}
+</script>
