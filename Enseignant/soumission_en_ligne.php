@@ -57,7 +57,6 @@ $id_sem=$_SESSION['id_semestre'];
 
   $req2 = mysqli_query($conn , $req_sous2);
 
-if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
                   
  ?>
 
@@ -90,6 +89,8 @@ if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
                                 </thead>
                                 <tbody>
                                 <?php
+                                if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
+
                                     while($row=mysqli_fetch_assoc($req1)){ 
                                        ?>
                                   <tr >
@@ -97,9 +98,13 @@ if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
                                     <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['titre_sous']?></td>
                                     <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['date_debut']?></td>
                                     <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['libelle_type']?></td>
-                                    <td <?php if (strtotime($row['date_fin']) - time() <= 600) echo 'style="color: red;"'; ?>>
+                                    <td>
                                         <?php
-                                            echo '<input type="datetime-local" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >';
+                                          if ((strtotime($row['date_fin']) - time()) <= 600) {
+                                            echo '<input type="datetime" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" class="text-danger" >';
+                                          }else{
+                                            echo '<input type="datetime" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >';
+                                          }
                                         ?>
                                     </td>
                                     <td><a href="detail_soumission.php?id_sous=<?php echo $row['id_sous']?>">Detaille</a></td>
@@ -113,7 +118,7 @@ if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
                             </table>
                             
                         </div>
-                    </div>
+                    </div>z
                 </div>
             </div>
       
@@ -154,8 +159,6 @@ if (isset($_SESSION['modifier_reussi']) && $_SESSION['modifier_reussi'] === true
   // Supprimer l'indicateur de succès de la session
   unset($_SESSION['modifier_reussi']);
 }
-
-
 else if (isset($_SESSION['cloture_reussi']) && $_SESSION['cloture_reussi'] === true) {
   echo "<script>
   Swal.fire({
@@ -170,9 +173,6 @@ else if (isset($_SESSION['cloture_reussi']) && $_SESSION['cloture_reussi'] === t
   // Supprimer l'indicateur de succès de la session
   unset($_SESSION['cloture_reussi']);
 }
-
-
-
 else if (isset($_SESSION['archive_reussi_ligne']) && $_SESSION['archive_reussi_ligne'] === true) {
   echo "<script>
   Swal.fire({
@@ -187,7 +187,6 @@ else if (isset($_SESSION['archive_reussi_ligne']) && $_SESSION['archive_reussi_l
   // Supprimer l'indicateur de succès de la session
   unset($_SESSION['archive_reussi_ligne']);
 }
-
 
 ?>
 <script>

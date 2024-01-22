@@ -12,16 +12,8 @@
   <!-- Fin des styles de mise en page -->
   <link rel="shortcut icon" href="../assets/images/favicon.ico" />
 
-  <!-- css for table-data -->
-  <!-- <link rel="stylesheet" type="text/css" href="CSS/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="CSS/data_table.css">
-  <link rel="stylesheet" href="CSS/data_table_boostrapp.css"> -->
-  <!-- end css for table-data -->
-
   <!-- CSS DataTables -->
   <link rel="stylesheet" type="text/css" href="../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css">
-
-
 
   <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
@@ -80,10 +72,6 @@
             </div>
           </a>
           <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-
-            <!-- <div class="container mt-12"> </div> -->
-
-
             <div class="logo">
 
               <img title="<?= $row['nom'] . " " . $row['prenom'] ?>" id="myButton" class="style-scope yt-img-shadow" src="../images/supnum.jpg" draggable="false" style="width: 40px; height: 40px; border-radius: 50%;">
@@ -124,14 +112,8 @@
             <i class="mdi mdi-clipboard-text menu-icon"></i>
           </a>
         </li>
-
-
-
       </ul>
     </nav>
-
-
-
     <!-- plugins:js -->
     <script src="../assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
@@ -148,21 +130,13 @@
     <script src="../assets/js/dashboard.js"></script>
     <script src="../assets/js/todolist.js"></script>
     <!-- Fin du JS personnalisé pour cette page -->
-
-
-    <!-- JS for table-data -->
-    <!-- <script src="JS/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="JS/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="JS/dataTables.bootstrap4.min.js"></script> -->
-
-
+    
     <!-- jQuery -->
     <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
 
     <!-- DataTables JavaScript -->
     <script type="text/javascript" src="../node_modules/datatables.net/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="../node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
-
 
     <script>
       $(document).ready(function() {

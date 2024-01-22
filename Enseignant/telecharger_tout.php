@@ -1,3 +1,4 @@
+
 <?php
 include_once "../connexion.php";
 
@@ -6,9 +7,22 @@ function downloadFilesAsZip($files) {
     $zipFilename = 'les_fichies_de_somission.zip';
 
     if ($zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+        // Group files by matricule
+        $filesByMatricule = array();
         foreach ($files as $file) {
-            // Add each file to the zip archive with its new filename
-            $zip->addFile($file['path'], $file['filename']);
+            $matricule = substr($file['filename'], 0, strpos($file['filename'], "_"));
+            $filesByMatricule[$matricule][] = $file;
+        }
+
+        // Add files to the ZIP archive
+        foreach ($filesByMatricule as $matricule => $matriculeFiles) {
+            // Create a folder for each set of files with the same matricule
+            $zip->addEmptyDir($matricule);
+
+            // Add files to the created folder
+            foreach ($matriculeFiles as $file) {
+                $zip->addFile($file['path'], $matricule . '/' . $file['filename']);
+            }
         }
 
         $zip->close();

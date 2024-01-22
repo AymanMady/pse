@@ -5,7 +5,6 @@ include_once("controller.php");
 
 <script src="/node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
-
 <div class="container-scroller">
     <div class="container-fluid page-body-wrapper full-page-wrapper">
         <div class="content-wrapper d-flex align-items-center auth">
@@ -56,12 +55,7 @@ include_once("controller.php");
         </div>
     </div>
 </div>
-
-
-
 <?php
-
-
 if (isset($_SESSION['cree_reussi']) && $_SESSION['cree_reussi'] === true) {
   echo "<script>
   Swal.fire({

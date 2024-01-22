@@ -22,9 +22,6 @@ if ($_SESSION["role"] == "ens") {
     <link rel="stylesheet" href="../assets/css/style.css">
     <!-- Fin des styles de mise en page -->
     <link rel="shortcut icon" href="../assets/images/favicon.ico" />
-     <link rel="stylesheet" type="text/css" href="CSS/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="CSS/data_table.css">
-    <link rel="stylesheet" href="CSS/data_table_boostrapp.css">
     <!-- end css for table-data -->
 
       <!-- CSS DataTables -->
@@ -175,9 +172,6 @@ if ($_SESSION["role"] == "ens") {
       <!-- Fin du JS personnalisé pour cette page -->
 
       <!-- JS for table-data -->
-       <script src="JS/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="JS/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="JS/dataTables.bootstrap4.min.js"></script>
 
       <!-- jQuery -->
       <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>

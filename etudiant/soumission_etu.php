@@ -85,58 +85,87 @@ $req = mysqli_query($conn, $req_detail);
 mysqli_num_rows($req);
 $row = mysqli_fetch_assoc($req);
 
+# Rêquete pour récupere la date de fin
+$sq_date = "select date_fin from soumission where id_sous = '$id_sous' ";
+$req_date = mysqli_query($conn, $sq_date);
+$row_date = mysqli_fetch_assoc($req_date);
 
 ?>
 <div class="content-wrapper">
-<div class="content" style="height:70px;">
+    <div class="content" style="height:70px;">
 
-<div class="page-header" style="height:100px;">
-    <div style="display:flex;justify-content:space-bettwen;width:100%;height:100px;" >
-        <div style="width:100%;">
-        <h3 class="page-title" >
-            <span class="page-title-icon bg-gradient-primary text-white me-2">
-                <i class="mdi mdi-home"></i>
-            </span> <a href="choix_semestre.php">Accueil</a>  / <a href="index_etudiant.php?id_semestre=<?php echo  $id_semestre ?>"><?php echo "S" . $id_semestre ?></a>   / <a href="soumission_etu_par_matiere.php?id_semestre=<?php echo  $id_semestre ?>""><?php echo $_SESSION['nom_mat'] ?></a>  / <a href="#"><?php echo $row['titre_sous']; ?></a> 
-        </h3>
+        <div class="page-header" style="height:100px;">
+            <div style="display:flex;justify-content:space-bettwen;width:100%;height:100px;">
+                <div style="width:100%;">
+                    <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                            <i class="mdi mdi-home"></i>
+                        </span> <a href="choix_semestre.php">Accueil</a> / <a href="index_etudiant.php?id_semestre=<?php echo  $id_semestre ?>"><?php echo "S" . $id_semestre ?></a> / <a href="soumission_etu_par_matiere.php?id_semestre=<?php echo  $id_semestre ?>""><?php echo $_SESSION['nom_mat'] ?></a>  / <a href=" #"><?php echo $row['titre_sous']; ?></a>
+                    </h3>
 
-        </div>
+                </div>
 
 
-        <div class="col-md-2 " style="width:300px ;height:100px">
-        <div class="card">
-            <div class="card-body " style="padding:30px">
-                <div class="countdown">
-                    <div class="box">
-                        <span class="num btn-gradient-info" id="days"></span>
-                        <span class="btn-gradient-info text">Jours</span>
-                    </div>
-                    <div class="box">
-                        <span class="num btn-gradient-info" id="hours"></span>
-                        <span class="btn-gradient-info text">Heurs</span>
-                    </div>
-                    <div class="box">
-                        <span class="num btn-gradient-info" id="minutes"></span>
-                        <span class="btn-gradient-info text">Minutes</span>
-                    </div>
-                    <div class="box">
-                        <span class="num btn-gradient-info" id="seconds"></span>
-                        <span class="btn-gradient-info text">Secondes</span>
+                <div class="col-md-2 " style="width:300px ;height:100px">
+                    <div class="card">
+                        <div class="card-body " style="padding:30px">
+                            <?php if (strtotime($row_date['date_fin']) - time() <= 600) { ?>
+                                <div class="countdown">
+                                    <div class="box">
+                                        <span class="num btn-gradient-danger" id="days"></span>
+                                        <span class="btn-gradient-danger text">Jours</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-danger" id="hours"></span>
+                                        <span class="btn-gradient-danger text">Heurs</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-danger" id="minutes"></span>
+                                        <span class="btn-gradient-danger text">Minutes</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-danger" id="seconds"></span>
+                                        <span class="btn-gradient-danger text">Secondes</span>
+                                    </div>
+                                </div>
+                            <?php
+                            } else {
+                            ?>
+                                <div class="countdown">
+                                    <div class="box">
+                                        <span class="num btn-gradient-info" id="days"></span>
+                                        <span class="btn-gradient-info text">Jours</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-info" id="hours"></span>
+                                        <span class="btn-gradient-info text">Heurs</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-info" id="minutes"></span>
+                                        <span class="btn-gradient-info text">Minutes</span>
+                                    </div>
+                                    <div class="box">
+                                        <span class="num btn-gradient-info" id="seconds"></span>
+                                        <span class="btn-gradient-info text">Secondes</span>
+                                    </div>
+                                </div>
+                            <?php
+                            }
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
-</div>
 
     <div class="content">
         <div class="row">
-        <h3 class="page-title">Dètails sur la soumission <?php echo $row['titre_sous']; ?> : </h3><br><br>
+            <h3 class="page-title">Dètails sur la soumission <?php echo $row['titre_sous']; ?> </h3><br><br>
             <?php
 
-             if (isset($_SESSION['temp_fin']) && ($_SESSION['temp_fin'] === true)) {
-            echo "<div class='alert alert-danger' id='success-alert' >
+            if (isset($_SESSION['temp_fin']) && ($_SESSION['temp_fin'] === true)) {
+                echo "<div class='alert alert-danger' id='success-alert' >
                 L'heure spécifiée pour l'examen est déjà écoulée.
                                             </div>";
 
@@ -169,7 +198,7 @@ $row = mysqli_fetch_assoc($req);
 
                         if (strtotime(gmdate("Y-m-d H:i:s")) >= strtotime($row['date_fin'])) {
                             echo ' <div class="alert alert-danger mt-3" id="success-alert">
-                                <strong>La date spécifiée pour cette soumission à été terminé.</strong>
+                                <strong>La date spécifiée pour cette soumission a été terminé.</strong>
                                 </div>';
                         }
                         ?>
@@ -271,11 +300,11 @@ $row = mysqli_fetch_assoc($req);
             $req_detail = "SELECT `status`, `date_fin`   FROM soumission   WHERE id_sous = $id_sous  ";
             $req = mysqli_query($conn, $req_detail);
             $row_status = mysqli_fetch_assoc($req);
-            
+
             date_default_timezone_set('GMT');
             $date = date('Y-m-d H:i:s');
-            
-            
+
+
             // verifier que la date ne pas encore terminer
             $req_detail3 = "SELECT  *   FROM soumission   WHERE id_sous = $id_sous and (status=0 or status=1)  and date_fin > '$date'  ";
             $req3 = mysqli_query($conn, $req_detail3);
@@ -284,17 +313,18 @@ $row = mysqli_fetch_assoc($req);
             $sql = "select * from reponses where id_sous = '$id_sous' and id_etud = (select id_etud from etudiant where email = '$email') ";
             $req = mysqli_query($conn, $sql);
             $row = mysqli_fetch_assoc($req);
-            $req_detail2 = "SELECT  `autoriser`  FROM soumission , demande  WHERE soumission.id_sous = $id_sous and (status=0 or status=1)  and soumission.id_sous = demande.id_sous and demande.id_etud = (select id_etud from etudiant where email = '$email') and autoriser = 1 ";
+            $req_detail2 = "SELECT  `autoriser`,`id_type_sous`  FROM soumission , demande  WHERE soumission.id_sous = $id_sous and (status=0 or status=1)  and soumission.id_sous = demande.id_sous and demande.id_etud = (select id_etud from etudiant where email = '$email') and autoriser = 1 ";
             $req2 = mysqli_query($conn, $req_detail2);
             $row2 = mysqli_fetch_assoc($req2);
+            $row6 = mysqli_fetch_assoc($req3);
 
 
 
-            if (mysqli_num_rows($req3) > 0 and  $row_status['status'] != 1 and  $row_status['status'] != 2 ) {
+            if (mysqli_num_rows($req3) > 0 and  $row_status['status'] != 1 and  $row_status['status'] != 2) {
                 if (mysqli_num_rows($req2) == 0 or $row2['autoriser'] == 0) {
                     if (mysqli_num_rows($req) == 0) {
                         $_SESSION['autorisation'] = true;
-                        ?>
+            ?>
                         <p>
                             <a href="automatisation.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Rendre le travail</a>
                         </p>
@@ -302,11 +332,18 @@ $row = mysqli_fetch_assoc($req);
                     } else {
                     ?>
                         <?php
-                        if ($row['confirmer'] ==  1) {
-                        ?>
-                            <p>
+                        if ($row['confirmer'] ==  1 ) {
+                            if($row6['id_type_sous']==3){
+                            ?> <p>
                                 <a href="demande_modifier.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Demande de faire une modification</a>
                             </p>
+                            <?php
+                            }
+                            else{
+                                echo "";
+                            }
+                        ?>
+                            
                         <?php
                         } else {
                             $_SESSION['autorisation'] = true;
@@ -340,7 +377,7 @@ $row = mysqli_fetch_assoc($req);
                             <p>
                                 <a href="reponse_etudiant.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Modifier le travail</a>
                             </p>
-                        <?php
+            <?php
                         }
                     }
                 }
@@ -388,48 +425,48 @@ $row = mysqli_fetch_assoc($req);
 
 
 <?php
-    $sql = "select date_fin from soumission where id_sous = '$id_sous' ";
-    $req = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($req);
-    $endDate = date("M d, Y H:i:s", strtotime($row['date_fin']));
+$sql = "select date_fin from soumission where id_sous = '$id_sous' ";
+$req = mysqli_query($conn, $sql);
+$row = mysqli_fetch_assoc($req);
+$endDate = date("M d, Y H:i:s", strtotime($row['date_fin']));
 ?>
 
 <script>
-// Définir la date de fin du compte à rebours (format : "Mois Jour, Année Heures:Minutes:Secondes")
-const endDate = new Date("<?php echo $endDate; ?>").getTime();
+    // Définir la date de fin du compte à rebours (format : "Mois Jour, Année Heures:Minutes:Secondes")
+    const endDate = new Date("<?php echo $endDate; ?>").getTime();
 
-// Mettre à jour le compte à rebours chaque seconde
-const countdownInterval = setInterval(function() {
-  // Obtenir la date et l'heure actuelles
-  const now = new Date().getTime();
+    // Mettre à jour le compte à rebours chaque seconde
+    const countdownInterval = setInterval(function() {
+        // Obtenir la date et l'heure actuelles
+        const now = new Date().getTime();
 
-  // Calculer la différence entre la date de fin et la date actuelle
-  const timeRemaining = endDate - now;
+        // Calculer la différence entre la date de fin et la date actuelle
+        const timeRemaining = endDate - now;
 
-  // Calculer les jours, heures, minutes et secondes restants
-  const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+        // Calculer les jours, heures, minutes et secondes restants
+        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-  // Afficher le compte à rebours dans les éléments HTML avec les IDs correspondants
-  document.getElementById("days").innerHTML = formatTime(days) ;
-  document.getElementById("hours").innerHTML = formatTime(hours) ;
-  document.getElementById("minutes").innerHTML = formatTime(minutes) ;
-  document.getElementById("seconds").innerHTML = formatTime(seconds);
+        // Afficher le compte à rebours dans les éléments HTML avec les IDs correspondants
+        document.getElementById("days").innerHTML = formatTime(days);
+        document.getElementById("hours").innerHTML = formatTime(hours);
+        document.getElementById("minutes").innerHTML = formatTime(minutes);
+        document.getElementById("seconds").innerHTML = formatTime(seconds);
 
-  // Vérifier si le compte à rebours a atteint zéro
-  if (timeRemaining < 0) {
-    clearInterval(countdownInterval); // Arrêter le compte à rebours lorsque le temps est écoulé
-    document.getElementById("days").innerHTML = "00" ;
-    document.getElementById("hours").innerHTML = "00" ;
-    document.getElementById("minutes").innerHTML = "00" ;
-    document.getElementById("seconds").innerHTML = "00";
-  }
-}, 1000);
+        // Vérifier si le compte à rebours a atteint zéro
+        if (timeRemaining < 0) {
+            clearInterval(countdownInterval); // Arrêter le compte à rebours lorsque le temps est écoulé
+            document.getElementById("days").innerHTML = "00";
+            document.getElementById("hours").innerHTML = "00";
+            document.getElementById("minutes").innerHTML = "00";
+            document.getElementById("seconds").innerHTML = "00";
+        }
+    }, 1000);
 
-// Fonction pour formater le temps avec un zéro en ajoutant un zéro devant les chiffres inférieurs à 10
-function formatTime(time) {
-  return time < 10 ? "0" + time : time;
-}
+    // Fonction pour formater le temps avec un zéro en ajoutant un zéro devant les chiffres inférieurs à 10
+    function formatTime(time) {
+        return time < 10 ? "0" + time : time;
+    }
 </script>
