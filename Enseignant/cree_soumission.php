@@ -125,7 +125,7 @@ if (isset($_POST['button'])) {
                             // $sql_tou = "SELECT * FROM `inscription` WHERE inscription.id_matiere='$id_matiere'";
                             // $req_tou = mysqli_query($conn, $sql_tou);
                             $_SESSION['ajout_reussi'] = true;
-                            unset($_SESSION['test']);
+
                             if (isset($_GET['id_matiere'])) {
                                 header("location:soumission_par_matiere.php");
                             } else {
@@ -394,8 +394,8 @@ if (isset($_SESSION['file_fide']) && $_SESSION['file_fide'] === true) {
         text: 'Veuillez sélectionner au moins un fichier avant de soumettre.',
         icon: 'error',
         showCancelButton: true,
-        confirmButtonText: 'Confirme',
-        cancelButtonText: 'Sélectionner à nouveau',
+        confirmButtonText: 'Sélectionner à nouveau',
+        cancelButtonText: 'Confirme',
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = 'test_cree_soumission.php';
