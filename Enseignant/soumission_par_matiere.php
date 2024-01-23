@@ -88,7 +88,20 @@ $type_sous = "SELECT * FROM type_soumission";
 $type_sous_qry = mysqli_query($conn, $type_sous);
 
 
+if (isset($_SESSION['ajout_reussi']) && $_SESSION['ajout_reussi'] === true) {
+  echo "<script>
+  Swal.fire({
+      title: 'Ajout réussi !',
+      text: 'La soumission a été ajouté avec succès.',
+      icon: 'success',
+      confirmButtonColor: '#3099d6',
+      confirmButtonText: 'OK'
+  });
+  </script>";
 
+  // Supprimer l'indicateur de succès de la session
+  unset($_SESSION['ajout_reussi']);
+}
       
 ?>      
     <div class="content-wrapper">
