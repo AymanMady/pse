@@ -84,7 +84,7 @@ CREATE TABLE `type_soumission`(
 CREATE TABLE `soumission` (
 `id_sous` int(10) PRIMARY KEY AUTO_INCREMENT ,
 `titre_sous` varchar(50),
-`description_sous` varchar(50) ,
+`description_sous` varchar(500000) ,
 `person_contact` varchar(100) DEFAULT NULL,
 `id_ens` int(10) ,
 `date_debut` datetime NOT NULL,
@@ -257,11 +257,10 @@ INSERT INTO `type_soumission` (`id_type_sous`, `libelle`) VALUES
 -- --------------------------------------------------------
 
 
-INSERT INTO `utilisateur` (`login`, `pwd`, `active`, `code`, `id_role`) VALUES
-('admin@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 1),
-('sidi.med@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 2)
-;
-
+INSERT INTO `utilisateur` (`id_user`, `login`, `pwd`, `active`, `code`, `id_role`) VALUES
+(1, 'admin@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 1),
+(6, 'sidimohamed.ahmed@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 2),
+(9, 'meya.haroune@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 2);
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 
@@ -356,7 +355,6 @@ INSERT INTO `matiere_semestre` (`id_matiere_semestre`, `id_matiere`, `id_semestr
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
-
 
 INSERT INTO `etudiant` (`id_etud`, `matricule`, `nom`, `prenom`, `lieu_naiss`, `Date_naiss`, `id_semestre`, `annee`, `email`, `id_role`, `id_groupe`, `id_dep`, `groupe_td`) VALUES
 (1, '22001', 'Abderahman', 'Mohamed Mahmoud Mezid', '', '0000-00-00', 2, '2023-2024', '22001@supnum.mr', 3, 1, 3, 'TD2'),
@@ -642,7 +640,6 @@ INSERT INTO `enseigner` (`id_matiere`, `id_ens`, `id_groupe`, `id_type_matiere`)
 
 -- --------------------------------------------------------
 -- --------------------------------------------------------
-
 
 INSERT INTO `inscription` (`id_insc`, `id_etud`, `id_matiere`, `id_semestre`) VALUES
 (1, 1, 14, 1),
@@ -1797,3 +1794,5 @@ INSERT INTO `inscription` (`id_insc`, `id_etud`, `id_matiere`, `id_semestre`) VA
 (1168, 135, 13, 1),
 (1169, 136, 13, 1),
 (1170, 137, 13, 1);
+
+-- --------------------------------------------------------
