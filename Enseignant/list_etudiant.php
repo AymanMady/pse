@@ -1,79 +1,80 @@
 <?php
-session_start();
-$email = $_SESSION['email'];
-if ($_SESSION["role"] != "ens") {
-    header("location:authentification.php");
-}
-?>
-<?php
 include_once "../connexion.php";
 
-$id_matiere = $_GET['id_matiere'];
+function downloadFilesAsZip($files) {
+    $zip = new ZipArchive();
+    $zipFilename = 'les_fichies_de_somission.zip';
+
+    if ($zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+        // Group files by matricule
+        $filesByMatricule = array();
+        foreach ($files as $file) {
+            $matricule = substr($file['filename'], 0, strpos($file['filename'], "_"));
+            $filesByMatricule[$matricule][] = $file;
+        }
+
+        // Add files to the ZIP archive
+        foreach ($filesByMatricule as $matricule => $matriculeFiles) {
+            // Create a folder for each set of files with the same matricule
+            $zip->addEmptyDir($matricule);
+
+            // Add files to the created folder
+            foreach ($matriculeFiles as $file) {
+                $zip->addFile($file['path'], $matricule . '/' . $file['filename']);
+            }
+        }
+
+        $zip->close();
+
+        // Set headers for downloading the zip file
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($zipFilename));
+
+        // Read and output the zip file content
+        readfile($zipFilename);
+
+        // Delete the temporary zip file
+        unlink($zipFilename);
+    } else {
+        echo "Failed to create zip archive.";
+    }
+}
+
 $id_sous = $_GET['id_sous'];
-$req = mysqli_query($conn, "SELECT * FROM matiere where matiere.id_matiere ='$id_matiere' ");
-$row_matiere = mysqli_fetch_assoc($req);
-include "nav_bar.php";
+
+$sql2 = "SELECT fichiers_reponses.*, reponses.id_rep, etudiant.matricule
+         FROM fichiers_reponses, reponses, etudiant 
+         WHERE fichiers_reponses.id_rep 
+         IN (SELECT id_rep FROM reponses WHERE id_sous=$id_sous) 
+         AND fichiers_reponses.id_rep=reponses.id_rep 
+         AND etudiant.id_etud=reponses.id_etud 
+         ORDER BY etudiant.matricule";
+$req2 = mysqli_query($conn, $sql2);
+
+// Create an array to store file information
+$files = array();
+
+while ($row = mysqli_fetch_assoc($req2)) {
+    $file_chemin = $row['chemin_fichiere'];
+    $filepath = $file_chemin;
+
+    if (isset($file_chemin) && file_exists($filepath)) {
+        $filename = $row['matricule'] . "_" . $row['nom_fichiere'];
+        $files[] = array(
+            'filename' => $filename,
+            'path' => $filepath,
+        );
+    }
+}
+
+// Download files as a zip archive
+downloadFilesAsZip($files);
+
+// Close the database connection
+mysqli_close($conn);
 ?>
-<div class="content-wrapper">
-    <div class="content">
-        <div class="page-header">
-            <h3 class="page-title">
-                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="mdi mdi-home"></i>
-                </span> <a href="choix_semester.php">Accuei</a>
-                <?php echo " / " ?>
-                <a href="index_enseignant.php?id_semestre=<?php echo $_SESSION['id_semestre']; ?>"><?php echo "S" . $_SESSION['id_semestre']; ?></a>
-                <?php echo " / " ?><a href="soumission_par_matiere.php"><?php echo $_SESSION['libelle'] ?></a>
-                <?php echo " / " ?><a href="reponses_etud.php?id_sous=<?= $id_sous ?>"><?php echo $_SESSION['titre_sous']; ?></a> / <a href="#">Liste des etudiants inscrient </a>
-            </h3>
-
-        </div>
-
-        <div class="content">
-            <div class="row">
-
-
-                <div class="col-lg-12 grid-margin stretch-card p-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Liste des etudiants inscrient :</h4>
-                            <br>
-                            <table id="example" class="table table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Matricule</th>
-                                        <th>Nom et Prénom</th>
-                                        <th>Filière</th>
-                                        <th>Semestre</th>
-                                        <th>E-mail</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $req = mysqli_query($conn, "SELECT etudiant.*,departement.code ,semestre.* ,inscription.* FROM etudiant,semestre,inscription,departement where etudiant.id_semestre=semestre.id_semestre and etudiant.id_etud=inscription.id_etud and etudiant.id_dep=departement.id and id_matiere=$id_matiere  ORDER by matricule asc;");
-
-
-                                    if (mysqli_num_rows($req) == 0) {
-                                        echo "Il n'y a pas encore des etudiants ajouter !";
-                                    } else {
-                                        while ($row = mysqli_fetch_assoc($req)) {
-                                    ?>
-                                            <tr>
-                                                <td><?= $row['matricule'] ?></td>
-                                                <td><?= $row['nom'] ?>
-                                                <?= $row['prenom'] ?></td>
-                                                <?php $row['lieu_naiss'] ?>
-                                                <?php $row['Date_naiss'] ?>
-                                                <td><?= $row['code'] ?></td>
-                                                <td><?= $row['nom_semestre'] ?></td>
-                                                <?php $row['annee'] ?>
-                                                <td><?= $row['email'] ?></td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
-                                </tbody>
-
-                            </table>
-                        </div>
