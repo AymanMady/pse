@@ -95,15 +95,17 @@ $row2 = mysqli_fetch_assoc($req2);
                             <h4 class="text-center">Description de la soumission</h4><br>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class=" "> <?php echo "<strong>Titre :&nbsp; </strong>" . $row_sous['titre_sous']; ?></p>
-                                    <p class=""><?php echo "<strong>Description :&nbsp; </strong>" . $row_sous['description_sous']; ?></p>
-                                    <p class=""> <?php echo "<strong>Code de la matière :&nbsp; </strong>" . $row_sous['code']; ?></p>
+                                    <p > <?php echo "<strong>Titre :&nbsp; </strong>" . $row_sous['titre_sous']; ?></p>
+                                    <div style="overflow: auto; height: 70px;">
+                                    <?php echo "<strong>Description :&nbsp; </strong>" . $row_sous['description_sous']; ?>
+                                    </div><br>
+                                    <p > <?php echo "<strong>Code de la matière :&nbsp; </strong>" . $row_sous['code']; ?></p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <p class=""> <?php echo "<strong>Date de début : &nbsp;</strong>" . $row_sous['date_debut']; ?></p>
-                                    <p class=""><?php echo "<strong>Date de fin :&nbsp; </strong>" . $row_sous['date_fin']; ?></p>
-                                    <p class=""> <?php echo "<strong>Enseignant :&nbsp; </strong>" . $row_sous['nom'] . " " . $row_sous['prenom']; ?></p>
+                                    <p > <?php echo "<strong>Date de début : &nbsp;</strong>" . $row_sous['date_debut']; ?></p>
+                                    <p ><?php echo "<strong>Date de fin :&nbsp; </strong>" . $row_sous['date_fin']; ?></p>
+                                    <p > <?php echo "<strong>Enseignant :&nbsp; </strong>" . $row_sous['nom'] . " " . $row_sous['prenom']; ?></p>
                                 </div>
                             </div>
                         </div>

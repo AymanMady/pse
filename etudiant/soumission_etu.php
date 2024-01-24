@@ -202,9 +202,13 @@ $row_date = mysqli_fetch_assoc($req_date);
                                 </div>';
                         }
                         ?>
+
                         <h4>
                             <p><?php echo "<strong>Titre : </strong>" . $row['titre_sous']; ?></p>
-                            <p><?php echo "<strong>Description : </strong>" . $row['description_sous'];  ?></p>
+                            <div style="overflow: auto; height: 70px;">
+                                <?php echo "<strong>Description :&nbsp; </strong>" . $row['description_sous']; ?>
+                            </div>
+                            <br>
                             <p><?php echo "<strong>Date de  début : </strong>" . $row['date_debut']; ?></p>
                             <p><?php echo "<strong>Date de  fin : </strong>" . $row['date_fin']; ?></p>
                             <p><?php echo "<strong>Pour plus des informations : </strong>" . $row['person_contact']; ?></p>
@@ -324,7 +328,7 @@ $row_date = mysqli_fetch_assoc($req_date);
                 if (mysqli_num_rows($req2) == 0 or $row2['autoriser'] == 0) {
                     if (mysqli_num_rows($req) == 0) {
                         $_SESSION['autorisation'] = true;
-            ?>
+                        ?>
                         <p>
                             <a href="automatisation.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Rendre le travail</a>
                         </p>
@@ -342,8 +346,7 @@ $row_date = mysqli_fetch_assoc($req_date);
                             else{
                                 echo "";
                             }
-                        ?>
-                            
+                        ?>  
                         <?php
                         } else {
                             $_SESSION['autorisation'] = true;
@@ -377,7 +380,7 @@ $row_date = mysqli_fetch_assoc($req_date);
                             <p>
                                 <a href="reponse_etudiant.php?id_sous=<?= $id_sous ?>&id_matiere=<?php echo $id_matiere ?>&color=<?php echo $color ?>&id_semestre=<?php echo $id_semestre ?>" class="btn btn-primary">Modifier le travail</a>
                             </p>
-            <?php
+                        <?php
                         }
                     }
                 }
