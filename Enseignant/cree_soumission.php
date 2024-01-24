@@ -13,31 +13,11 @@ $semestre = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, 
     enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem";
 $semestre_qry = mysqli_query($conn, $semestre);
 //pour recupere le valeur de la matiere
-if (isset($_SESSION['test']) == true) {
 
-    $id_matier = $_SESSION['id_matiere'];
-    $semestre1 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
-    WHERE matiere.id_matiere = enseigner.id_matiere AND
-    enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem  and matiere.id_matiere='$id_matier'";
-    $semestre_qry1 = mysqli_query($conn, $semestre1);
-
-    $semestre2 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
-    WHERE matiere.id_matiere = enseigner.id_matiere AND
-    enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem and matiere.id_matiere!='$id_matier'";
-    $semestre_qry2 = mysqli_query($conn, $semestre2);
-}
 //fin
 $type_sous = "SELECT * FROM type_soumission";
 $type_sous_qry = mysqli_query($conn, $type_sous);
-if (isset($_SESSION['test']) == true) {
-    //pour recuperer le valeur du type
-    $id_type = $_SESSION['type'];
-    $type_sous1 = "SELECT * FROM type_soumission WHERE id_type_sous=$id_type ";
-    $type_sous_qry1 = mysqli_query($conn, $type_sous1);
-    $type_sous2 = "SELECT * FROM type_soumission where id_type_sous!=$id_type";
-    $type_sous_qry2 = mysqli_query($conn, $type_sous2);
-    //fin
-}
+
 $persone_contact = "SELECT * FROM enseignant";
 $persone_contact_qry = mysqli_query($conn, $persone_contact);
 
@@ -68,7 +48,7 @@ if (isset($_POST['button'])) {
     $_SESSION['description_sous'] = $descri;
   
     $files = $_FILES['file'];
-
+    $_SESSION['test'] = true;
     $date = gmdate('Y-m-d H:i');
     $dateTime = new DateTime($date_debut);
     $date_debut_justifie = $dateTime->format('Y-m-d H:i:s');
@@ -76,7 +56,7 @@ if (isset($_POST['button'])) {
     $date_fin_justifie = $dateTime->format('Y-m-d H:i:s');
 
     if (strtotime($date_fin_justifie) < strtotime($date)) {
-        $_SESSION['test'] = true;
+        
         $message = "veuillez verifier les dates !";
     } else {
 
@@ -197,10 +177,25 @@ if (isset($_SESSION['test']) == true) {
                           
                             }
                             else{
+                                    $id_matier = $_SESSION['id_matiere'];
+                                    $semestre1 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
+                                    WHERE matiere.id_matiere = enseigner.id_matiere AND
+                                    enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem  and matiere.id_matiere='$id_matier'";
+                                    $semestre_qry1 = mysqli_query($conn, $semestre1);
+                                
+                                    $semestre2 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
+                                    WHERE matiere.id_matiere = enseigner.id_matiere AND
+                                    enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem and matiere.id_matiere!='$id_matier'";
+                                    $semestre_qry2 = mysqli_query($conn, $semestre2);
                             ?>
                             <select class="form-control" id="academic" value="Semesters" name="matiere">
                                 <option selected disabled> Matière </option>
-                                <?php while ($row = mysqli_fetch_assoc($semestre_qry)) : ?>
+                                    <?php while ($row = mysqli_fetch_assoc($semestre_qry1)) : ?>
+                                    
+                                        <option value="<?= $row['id_matiere']; ?>" selected><?= $row['code']; ?> <?= $row['libelle']; ?> </option>
+                                        
+                                    <?php endwhile; ?>
+                                <?php while ($row = mysqli_fetch_assoc($semestre_qry2)) : ?>
                                     <option value="<?= $row['id_matiere']; ?>"><?= $row['code']; ?> <?= $row['libelle']; ?> </option>
                                 <?php endwhile; ?>
                             </select>
@@ -222,6 +217,13 @@ if (isset($_SESSION['test']) == true) {
                         <div class="form-group">
                             <label>Type soumission</label>
                             <div class="col-md-12">
+                                <?php
+                                    $id_type = $_SESSION['type'];
+                                    $type_sous1 = "SELECT * FROM type_soumission WHERE id_type_sous=$id_type ";
+                                    $type_sous_qry1 = mysqli_query($conn, $type_sous1);
+                                    $type_sous2 = "SELECT * FROM type_soumission where id_type_sous!=$id_type";
+                                    $type_sous_qry2 = mysqli_query($conn, $type_sous2);
+                                ?>
                                 <select class="form-control" id="academic" value="Semesters" name="type">
                                     <?php while ($row_type_sous = mysqli_fetch_assoc($type_sous_qry1)) : ?>
                                         <option value="<?= $row_type_sous['id_type_sous']; ?>" selected> <?= $row_type_sous['libelle']; ?> </option>
@@ -247,8 +249,8 @@ if (isset($_SESSION['test']) == true) {
                             <label>Description </label>
                             <div class="col-md-12">
                                 <textarea name="description_sous" class="form-control" cols="30" rows="10">
-            <?= trim($_SESSION['description_sous']) ?>
-        </textarea>
+                            <?= trim($_SESSION['description_sous']) ?>
+                        </textarea>
                             </div>
                         </div>
 
@@ -388,20 +390,23 @@ if (isset($_SESSION['test']) == true) {
 }
 if (isset($_SESSION['file_fide']) && $_SESSION['file_fide'] === true) {
  
-    echo "<script>
+   echo "<script>
     Swal.fire({
-        title: 'Erreur!',
-        text: 'Veuillez sélectionner au moins un fichier avant de soumettre.',
-        icon: 'error',
+        title: '',
+        text: 'La sélection d’un fichier n’est pas obligatoire. Vous pouvez continuer ou choisir de sélectionner un fichier.',
+        icon: 'info',
         showCancelButton: true,
-        confirmButtonText: 'Sélectionner à nouveau',
-        cancelButtonText: 'Confirme',
+        confirmButtonText: 'Continuer sans sélectionner',
+        cancelButtonText: 'Sélectionner un fichier',
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'test_cree_soumission.php';
+            // Ajoutez le code pour continuer sans sélectionner un fichier
+            window.location.href = 'test_cree_soumission.php'; // Redirige pour sélectionner un fichier
+        } else {
+           
         }  
     });
-      </script>";
+    </script>";
   
     // Supprimer la variable de session pour éviter qu'elle ne s'affiche à nouveau lors du rechargement de la page
     unset($_SESSION['file_fide']);
