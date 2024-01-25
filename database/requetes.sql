@@ -1,281 +1,360 @@
--- phpMyAdmin SQL Dump
--- version 5.2.0
--- https://www.phpmyadmin.net/
---
--- Hôte : 127.0.0.1:3306
--- Généré le : mar. 23 jan. 2024 à 11:59
--- Version du serveur : 8.0.31
--- Version de PHP : 8.0.26
+DROP DATABASE IF EXISTS `pse`;
+CREATE database pse;
+use pse;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de données : `pse`
---
-
--- --------------------------------------------------------
-
---
--- Structure de la table `demande`
---
-
-DROP TABLE IF EXISTS `demande`;
-CREATE TABLE IF NOT EXISTS `demande` (
-  `id_demande` int NOT NULL AUTO_INCREMENT,
-  `id_sous` int DEFAULT NULL,
-  `id_etud` int DEFAULT NULL,
-  `description` varchar(200) DEFAULT NULL,
-  `autoriser` int DEFAULT '0' COMMENT '1=Autoriser | 0= Non Autoriser',
-  PRIMARY KEY (`id_demande`),
-  KEY `id_sous` (`id_sous`),
-  KEY `id_etud` (`id_etud`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `departement`
---
-
-DROP TABLE IF EXISTS `departement`;
-CREATE TABLE IF NOT EXISTS `departement` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `departement` (
+  `id` int(10) AUTO_INCREMENT PRIMARY key,
   `code` text NOT NULL,
-  `nom` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `nom` text NOT NULL
+);
+
+CREATE TABLE `groupe` (
+`id_groupe` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`libelle` varchar(50) DEFAULT NULL,
+`id_dep` int(10),
+FOREIGN KEY (id_dep) REFERENCES departement(id)
+);
+
+CREATE TABLE `role` (
+`id_role` int(10) PRIMARY KEY AUTO_INCREMENT,
+`profile` varchar(50) DEFAULT NULL
+);
+
+CREATE TABLE `utilisateur` (
+`id_user` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`login` varchar(50) DEFAULT NULL,
+`pwd` varchar(100) DEFAULT NULL,
+`active` tinyint(1) DEFAULT 1 COMMENT '1=Active | 0=Inactive',
+`code` varchar(20) DEFAULT NULL,
+`id_role` int(10) DEFAULT NULL ,
+FOREIGN KEY (id_role) REFERENCES role(id_role)
+);
+
+
+CREATE TABLE `module` (
+`id_module` int(10) PRIMARY KEY AUTO_INCREMENT,
+`nom_module` varchar(50) DEFAULT NULL
+);
+
+CREATE TABLE `semestre` (
+`id_semestre` int(10) PRIMARY KEY AUTO_INCREMENT,
+`nom_semestre` varchar(50) DEFAULT NULL
+);
+
+CREATE TABLE `type_matiere` (
+`id_type_matiere` int(10) PRIMARY KEY AUTO_INCREMENT,
+`libelle_type` varchar(50) NOT NULL
+);
+
+CREATE TABLE `matiere` (
+`id_matiere` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`code` varchar(20)  UNIQUE,
+`libelle` varchar(50) DEFAULT NULL,
+`specialite` varchar(20) DEFAULT NULL,
+`id_module` int(10)  ,
+`id_semestre` int(10) ,
+FOREIGN KEY (id_module) REFERENCES module(id_module),
+FOREIGN KEY (id_semestre) REFERENCES semestre(id_semestre)
+);
+
+CREATE TABLE `enseignant` (
+`id_ens` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`nom` varchar(60) DEFAULT NULL,
+`prenom` varchar(60) DEFAULT NULL,
+`Date_naiss` date DEFAULT NULL,
+`lieu_naiss` varchar(30) DEFAULT NULL,
+`email` varchar(100) DEFAULT NULL,
+`num_tel` int(20) DEFAULT NULL,
+`num_whatsapp` int(20) DEFAULT NULL,
+`diplome` varchar(20) DEFAULT NULL,
+`grade` varchar(20) DEFAULT NULL,
+`id_role` int(11) NOT NULL,
+FOREIGN KEY (id_role) REFERENCES role(id_role)
+
+);
+
+
+CREATE TABLE `type_soumission`(
+  `id_type_sous` INT(10) AUTO_INCREMENT PRIMARY KEY,
+  `libelle` varchar(50) DEFAULT NULL
+);
+
+
+
+CREATE TABLE `soumission` (
+`id_sous` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`titre_sous` varchar(50),
+`description_sous` varchar(500000) ,
+`person_contact` varchar(100) DEFAULT NULL,
+`id_ens` int(10) ,
+`date_debut` datetime NOT NULL,
+`date_fin` datetime NOT NULL,
+`valide` tinyint(1) DEFAULT NULL,
+`status` INT(5) DEFAULT 0,
+`id_matiere` int(10) DEFAULT NULL,
+`id_type_sous` INT(10) DEFAULT NULL,
+FOREIGN KEY (id_matiere) REFERENCES matiere(id_matiere),
+  FOREIGN KEY (id_ens) REFERENCES enseignant(id_ens),
+  FOREIGN KEY (id_type_sous) REFERENCES type_soumission(id_type_sous)
+);
+
+
+DROP TABLE IF EXISTS `fichiers_soumission`;
+CREATE TABLE IF NOT EXISTS `fichiers_soumission` (
+  `id_fichier_sous` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `nom_fichier` varchar(255) NOT NULL,
+  `chemin_fichier` varchar(255) NOT NULL,
+  `id_sous` int(10) DEFAULT NULL,
+ FOREIGN KEY (id_sous) REFERENCES soumission(id_sous)
+);
+
+
+
+CREATE TABLE `etudiant` (
+`id_etud` int(10) PRIMARY KEY AUTO_INCREMENT ,
+`matricule` varchar(50) NOT NULL UNIQUE,
+`nom` varchar(60) DEFAULT NULL,
+`prenom` varchar(60) DEFAULT NULL,
+`lieu_naiss` varchar(100) DEFAULT NULL,
+`Date_naiss` date DEFAULT NULL,
+`id_semestre` int(10) DEFAULT NULL,
+`annee` varchar(50) DEFAULT NULL,
+`email` varchar(50) DEFAULT NULL,
+`id_role` int(11) NOT NULL,
+`id_groupe` int(10) DEFAULT NULL,
+`id_dep` int(10) DEFAULT NULL,
+`groupe_td` varchar(60) DEFAULT NULL,
+FOREIGN KEY (id_semestre) REFERENCES semestre(id_semestre),
+FOREIGN KEY (id_dep) REFERENCES departement(id),
+FOREIGN KEY (id_role) REFERENCES role(id_role),
+FOREIGN KEY (id_groupe) REFERENCES groupe(id_groupe)
+);
+
+
+
+CREATE TABLE `enseigner` (
+`id_matiere` int(10)  NOT NULL,
+`id_ens` int(10)  NOT NULL,
+`id_groupe` int(10) NOT NULL,
+`id_type_matiere` int(10) NOT NULL,
+FOREIGN KEY (id_type_matiere) REFERENCES type_matiere(id_type_matiere),
+FOREIGN KEY (id_matiere) REFERENCES matiere(id_matiere),
+FOREIGN KEY (id_groupe) REFERENCES groupe(id_groupe),
+FOREIGN KEY (id_ens) REFERENCES enseignant(id_ens)
+);
+
+CREATE TABLE inscription(
+id_insc int AUTO_INCREMENT PRIMARY key ,
+id_etud int(10) NOT NULL ,
+id_matiere INT(10) NOT NULL ,
+id_semestre INT(10) NOT NULL ,
+FOREIGN KEY (id_matiere) REFERENCES matiere(id_matiere),
+FOREIGN KEY (id_semestre) REFERENCES semestre(id_semestre),
+FOREIGN KEY (id_etud) REFERENCES etudiant(id_etud)
+);
 
 --
--- Déchargement des données de la table `departement`
---
 
-INSERT INTO `departement` (`id`, `code`, `nom`) VALUES
-(1, 'DSI', 'Devellopement'),
-(2, 'RSS', 'Réseaux'),
-(3, 'CNM', 'Multimedia'),
-(4, 'TC', 'Troncommun');
+CREATE TABLE matiere_semestre(
+	id_matiere_semestre int(10) PRIMARY KEY AUTO_INCREMENT ,
+    id_matiere int(10),
+    id_semestre int(10),
+    FOREIGN KEY (id_matiere) REFERENCES matiere(id_matiere),
+    FOREIGN KEY (id_semestre) REFERENCES semestre(id_semestre)
+);
+
+
+
+CREATE TABLE reponses(
+  id_rep int(10) AUTO_INCREMENT PRIMARY key ,
+  description_rep varchar(200),
+  date datetime DEFAULT NOW(), 
+  render bool DEFAULT 0,
+  confirmer bool DEFAULT 0,
+  note float(10) DEFAULT 0,
+  id_sous INT(10) not NULL,
+  id_etud INT(10) not NULL,
+  FOREIGN KEY (id_sous) REFERENCES soumission(id_sous),
+  FOREIGN KEY (id_etud) REFERENCES etudiant(id_etud)
+);
+
+CREATE TABLE IF NOT EXISTS `fichiers_reponses` (
+  `id_fich_rep` int(11) NOT NULL AUTO_INCREMENT,
+  id_rep int(10) NOT NULL,
+  `nom_fichiere` varchar(255) NOT NULL,
+  `chemin_fichiere` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_fich_rep`),
+  FOREIGN KEY (id_rep) REFERENCES reponses(id_rep)
+);
+
+CREATE TABLE `demande` (
+  id_demande int(10) AUTO_INCREMENT PRIMARY key ,
+  `id_sous` int(10) DEFAULT NULL,
+  `id_etud` int(10) DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `autoriser` int(1) DEFAULT 0 COMMENT '1=Autoriser | 0= Non Autoriser',
+  FOREIGN KEY (id_sous) REFERENCES soumission(id_sous),
+  FOREIGN KEY (id_etud) REFERENCES etudiant(id_etud)
+);
+
+
+DROP TABLE IF EXISTS `fichiers_soumission`;
+CREATE TABLE IF NOT EXISTS `fichiers_soumission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_sous` int(11) NOT NULL,
+  `nom_fichier` varchar(255) NOT NULL,
+  `chemin_fichier` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+   FOREIGN KEY (id_sous) REFERENCES soumission(id_sous)
+);
+
+CREATE TABLE IF NOT EXISTS `fichiers_reponses` (
+  `id_fich_rep` int(11) NOT NULL AUTO_INCREMENT,
+  id_rep int(10) NOT NULL,
+  `nom_fichiere` varchar(255) NOT NULL,
+  `chemin_fichiere` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_fich_rep`),
+    FOREIGN KEY (id_rep) REFERENCES reponses(id_rep)
+);
+
 
 -- --------------------------------------------------------
-
---
--- Structure de la table `enseignant`
---
-
-DROP TABLE IF EXISTS `enseignant`;
-CREATE TABLE IF NOT EXISTS `enseignant` (
-  `id_ens` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(60) DEFAULT NULL,
-  `prenom` varchar(60) DEFAULT NULL,
-  `Date_naiss` date DEFAULT NULL,
-  `lieu_naiss` varchar(30) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `num_tel` int DEFAULT NULL,
-  `num_whatsapp` int DEFAULT NULL,
-  `diplome` varchar(20) DEFAULT NULL,
-  `grade` varchar(20) DEFAULT NULL,
-  `id_role` int NOT NULL,
-  PRIMARY KEY (`id_ens`),
-  KEY `id_role` (`id_role`)
-) ENGINE=MyISAM AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `enseignant`
---
-
-INSERT INTO `enseignant` (`id_ens`, `nom`, `prenom`, `Date_naiss`, `lieu_naiss`, `email`, `num_tel`, `num_whatsapp`, `diplome`, `grade`, `id_role`) VALUES
-(34, 'Moctar', 'Abderrahmane Sidi El', '0000-00-00', 'NKTT', 'abderrahmane.sidi-elmoctar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(35, 'Cheikhna', 'Aboubecrine', '0000-00-00', 'NKTT', 'aboubacrine.cheikhna@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(36, 'Aboubecrine', 'Aicha', '0000-00-00', 'NKTT', 'aicha.aboubecrine@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(37, 'Mohamedou', 'Debagh', '0000-00-00', 'NKTT', 'mohamedou.debagh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(38, 'Sow', 'Ahmed Adama', '0000-00-00', 'NKTT', 'ahmed.sow@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(39, 'Elhadj', 'El Hacen', '0000-00-00', 'NKTT', 'elhacen.elhadj@supnum.m', 22420813, 22420813, 'Prof', 'Prof', 2),
-(40, 'Babou', 'Hafeth M. Mohamed', '0000-00-00', 'NKTT', 'hafedh.mohamed-babou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(41, 'Rabeh Hammady', ' Ahmed Dine', '0000-00-00', 'NKTT', 'hammady.rabeh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(42, 'Guerea Mohamed', 'Cheikh Nagi', '0000-00-00', 'NKTT', 'mcheikh.guerea@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(43, 'Aly ', 'Nagi', '0000-00-00', 'NKTT', 'nagi.taleb-aly@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(44, 'Bellal Abada', 'Mariem ', '0000-00-00', 'NKTT', 'mariem.bellal@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(45, 'Biha', 'Sidi Mohamed Lemine', '0000-00-00', 'NKTT', 'sidi.biha@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(46, 'Soufi', 'Brahim Med Nouh Cheikh', '0000-00-00', 'NKTT', 'brahim.cheikh-soufi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(47, 'Cheikh', 'Abdellahi Ahmed', '0000-00-00', 'NKTT', 'abdellahi.cheikh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(48, 'khourou', 'El Moustapha Saleck', '0000-00-00', 'NKTT', 'el-moustapha.ekhourou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(49, 'Sidaty', 'Sidaty Mohamedou', '0000-00-00', 'NKTT', 'sidaty.mohamedou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(50, 'ElAoun', 'Moustapha Sidi', '0000-00-00', 'NKTT', 'moustapha.elaoun@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(51, 'Soumare', 'Abdallahi Moussa', '0000-00-00', 'NKTT', 'abdellahi.soumare@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(52, 'Bakar', 'Ahmed Ahmed', '0000-00-00', 'NKTT', 'ahmed.bakar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(53, 'Abdallahi', 'Mariem Mohamed', '0000-00-00', 'NKTT', 'mariem.abdallahi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(54, 'Louly', 'Mohamed Aly', '0000-00-00', 'NKTT', 'ma.louly@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(55, 'Baba', 'Elyekheir Mint Yahya', '0000-00-00', 'NKTT', 'eluekheir-yahaya.baba@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(56, 'ElHassen', 'Aichetou', '0000-00-00', 'NKTT', 'aichetou.el-hassen@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(57, 'Khiar', 'Bouha Neama Cheikh Taleb', '0000-00-00', 'NKTT', 'bouha.ch-ta-khiar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(58, 'Abdy', 'Sidi Mohamed', '0000-00-00', 'NKTT', 'sidimohamed.abdy@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(59, 'Lam', 'Mamadou', '0000-00-00', 'NKTT', 'mamadou.lam@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(60, 'Abdellahi', 'Hama Cheikh', '0000-00-00', 'NKTT', 'hama.abdellahi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(61, 'Selam', 'Varha Abd', '0000-00-00', 'NKTT', 'varha.abdselam@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(62, 'Mohamed', 'Saghir', '0000-00-00', 'NKTT', 'saghir.mohamed@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(63, 'Maouloud', 'Mouhamed Sidi Mouhamed', '0000-00-00', 'NKTT', 'msidi.maouloud@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(64, 'vall', 'Moctar Med', '0000-00-00', 'NKTT', 'moctar.ahmedval@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(65, 'Sejad', 'Ahmed', '0000-00-00', 'NKTT', 'ahmed.sejad@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
-(66, 'Mohamed Lamine', 'Mohamed Lamine', '1984-09-02', 'nktt', 'm-lamine.ahmed-sidi@supnum.mr', NULL, NULL, 'master', 'maître assistant', 2),
-(1, 'Cheikh', 'Dhib', '1983-01-22', 'nktt', 'cheikh.dhib@supnum.mr', NULL, NULL, 'doctor', 'directeur', 2),
-(2, 'Moussa', 'Demba', '1989-10-12', 'nkt', 'moussa.demba@supnum.mr', NULL, NULL, 'doctor', 'directeur adjoint', 2),
-(3, 'Meya', 'Haroune', '1993-06-22', 'nktt', 'meya.haroune@supnum.mr', NULL, NULL, 'doctor', 'prof', 2),
-(4, 'Sidi', 'Mohamed', '1995-10-27', 'Rosso', 'sidi.med@supnum.mr', NULL, NULL, 'doctor', 'maître assistant', 2),
-(7, 'sidi', 'soueina', '1983-01-22', 'nktt', 'sidi.souiena@supnum.mr', NULL, NULL, 'doctor', 'prof', 2),
-(80, 'Mohamed Lamine', 'Mohamed Lamine', '1984-09-02', 'nktt', 'm-lamine.ahmed-sidi@supnum.mr', NULL, NULL, 'master', 'maître assistant', 2),
-(81, 'ElMamy ', 'Sidi Boubacar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
-(82, 'Fatimetou ', ' Abdou ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
-(83, 'Rifaa ', '  Sadegh ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
-(84, 'EL Hacen', 'Elhadj ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2);
-
 -- --------------------------------------------------------
 
---
--- Structure de la table `enseigner`
---
 
-DROP TABLE IF EXISTS `enseigner`;
-CREATE TABLE IF NOT EXISTS `enseigner` (
-  `id_matiere` int NOT NULL,
-  `id_ens` int NOT NULL,
-  `id_groupe` int NOT NULL,
-  `id_type_matiere` int NOT NULL,
-  KEY `id_type_matiere` (`id_type_matiere`),
-  KEY `id_matiere` (`id_matiere`),
-  KEY `id_groupe` (`id_groupe`),
-  KEY `id_ens` (`id_ens`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `semestre` (`id_semestre`, `nom_semestre`) VALUES
+(1, 'S1'),
+(2, 'S2'),
+(3, 'S3'),
+(4, 'S4'),
+(5, 'S5'),
+(6, 'S6');
 
---
--- Déchargement des données de la table `enseigner`
---
 
-INSERT INTO `enseigner` (`id_matiere`, `id_ens`, `id_groupe`, `id_type_matiere`) VALUES
-(13, 39, 2, 2),
-(13, 40, 1, 1),
-(13, 38, 1, 3),
-(17, 36, 2, 4),
-(17, 2, 1, 2),
-(17, 2, 2, 1),
-(17, 2, 1, 1),
-(18, 3, 2, 13),
-(13, 44, 1, 2),
-(23, 36, 2, 1),
-(23, 36, 2, 4),
-(23, 35, 2, 5),
-(23, 43, 1, 1),
-(23, 36, 2, 5),
-(23, 43, 1, 2),
-(23, 43, 1, 3),
-(23, 2, 3, 1),
-(23, 2, 3, 6),
-(18, 1, 1, 1),
-(18, 3, 2, 1),
-(18, 3, 3, 1),
-(18, 60, 1, 9),
-(17, 43, 2, 5),
-(17, 2, 1, 10),
-(17, 35, 2, 13),
-(17, 43, 2, 15),
-(21, 7, 1, 1),
-(21, 7, 1, 8),
-(21, 7, 2, 1),
-(21, 7, 2, 8),
-(21, 7, 3, 1),
-(13, 39, 2, 2),
-(13, 40, 1, 1),
-(13, 38, 1, 3),
-(17, 36, 2, 4),
-(17, 2, 1, 2),
-(17, 2, 2, 1),
-(17, 2, 1, 1),
-(18, 3, 2, 13),
-(13, 44, 1, 2),
-(23, 36, 2, 1),
-(23, 36, 2, 4),
-(23, 35, 2, 5),
-(23, 43, 1, 1),
-(23, 36, 2, 5),
-(23, 43, 1, 2),
-(23, 43, 1, 3),
-(23, 2, 3, 1),
-(23, 2, 3, 6),
-(18, 1, 1, 1),
-(18, 3, 2, 1),
-(18, 3, 3, 1),
-(18, 60, 1, 9),
-(17, 43, 2, 5),
-(17, 2, 1, 10),
-(17, 35, 2, 13),
-(17, 43, 2, 15),
-(21, 7, 1, 1),
-(21, 7, 1, 8),
-(21, 7, 2, 1),
-(21, 7, 2, 8),
-(21, 7, 3, 1),
-(21, 7, 3, 8),
-(20, 36, 1, 2),
-(20, 43, 2, 2),
-(20, 36, 1, 3),
-(20, 43, 2, 3),
-(20, 36, 1, 1),
-(20, 43, 2, 1),
-(20, 66, 3, 1),
-(20, 66, 3, 2),
-(20, 66, 3, 3),
-(21, 7, 3, 8),
-(13, 81, 1, 9),
-(13, 80, 1, 3),
-(13, 4, 2, 1),
-(17, 39, 1, 9),
-(17, 39, 3, 6),
-(17, 39, 1, 11),
-(17, 39, 3, 14),
-(18, 47, 1, 3),
-(18, 47, 1, 10),
-(18, 39, 1, 11),
-(18, 47, 2, 17),
-(19, 58, 1, 1);
+
 
 -- --------------------------------------------------------
+-- --------------------------------------------------------
 
---
--- Structure de la table `etudiant`
---
 
-DROP TABLE IF EXISTS `etudiant`;
-CREATE TABLE IF NOT EXISTS `etudiant` (
-  `id_etud` int NOT NULL AUTO_INCREMENT,
-  `matricule` varchar(50) NOT NULL,
-  `nom` varchar(60) DEFAULT NULL,
-  `prenom` varchar(60) DEFAULT NULL,
-  `lieu_naiss` varchar(100) DEFAULT NULL,
-  `Date_naiss` date DEFAULT NULL,
-  `id_semestre` int DEFAULT NULL,
-  `annee` varchar(50) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL,
-  `id_role` int NOT NULL,
-  `id_groupe` int DEFAULT NULL,
-  `id_dep` int DEFAULT NULL,
-  `groupe_td` varchar(60) DEFAULT NULL,
-  PRIMARY KEY (`id_etud`),
-  UNIQUE KEY `matricule` (`matricule`),
-  KEY `id_semestre` (`id_semestre`),
-  KEY `id_dep` (`id_dep`),
-  KEY `id_role` (`id_role`),
-  KEY `id_groupe` (`id_groupe`)
-) ENGINE=MyISAM AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Déchargement des données de la table `etudiant`
---
+INSERT INTO `role` (`id_role`, `profile`) VALUES
+(1, 'Administrateur'),
+(2, 'Enseignant'),
+(3, 'Étudiant');
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+INSERT INTO `type_soumission` (`id_type_sous`, `libelle`) VALUES 
+(1, 'Examen'), 
+(2, 'Devoir'), 
+(3, 'TP Notée')
+;
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `utilisateur` (`id_user`, `login`, `pwd`, `active`, `code`, `id_role`) VALUES
+(1, 'admin@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 1),
+(6, 'sidimohamed.ahmed@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 2),
+(9, 'meya.haroune@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 2);
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `module` (`nom_module`)
+VALUES ('Programmation et développement 1'),
+      ('Systèmes et Réseaux'),
+      ('Outils mathématiques et informatiques'),
+      ('Développement personnel');
+
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `departement` ( `code`, `nom`) VALUES
+('DSI', 'Devellopement'),
+('RSS', 'Réseaux'),
+('CNM', 'Multimedia'),
+('TC', 'Troncommun');
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `type_matiere` (`id_type_matiere`, `libelle_type`) VALUES
+(1, 'CM'),
+(2, 'TP'),
+(3, 'TD'),
+(4, 'TP3'),
+(5, 'TP4'),
+(6, 'TP5'),
+(7, 'TP6'),
+(8, 'TP1'),
+(9, 'TP2'),
+(10, 'TD1'),
+(11, 'TD2'),
+(13, 'TD3'),
+(14, 'TD5'),
+(16, 'TD6'),
+(15, 'TP4'),
+(17, 'TD4');
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `groupe` (`libelle`, `id_dep`) VALUES
+('G1', 4),
+('G2', 4),
+('G3', 4);
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+
+INSERT INTO `matiere` (`id_matiere`, `code`, `libelle`, `specialite`, `id_module`, `id_semestre`) VALUES
+(13, 'Dev110', 'Algorithmique et programmation C++', 'TC', 1, 1),
+(14, 'MAI110', 'Algèbre', 'TC', 3, 1),
+(15, 'MAI111', 'Analyse', 'TC', 3, 1),
+(16, 'DPR111', 'Anglais', 'TC', 4, 1),
+(17, 'Dev111', 'Introduction aux bases de données', 'TC', 1, 1),
+(18, 'SYR110', 'Base d\'informatique', 'TC', 2, 1),
+(19, 'DPR110', 'Communication', 'TC', 4, 1),
+(20, 'MAI112', 'Certification PIX 1', 'TC', 3, 1),
+(21, 'DPR112', 'Projet personnel et professionnel 1', 'TC', 4, 1),
+(22, 'SYR111', 'Concepts de base de réseaux informatiques', 'TC', 2, 1),
+(23, 'Dev112', 'Technologies web', 'TC', 1, 1);
+
+
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
+
+
+INSERT INTO `matiere_semestre` (`id_matiere_semestre`, `id_matiere`, `id_semestre`) VALUES
+(1, 13, 1),
+(2, 17, 1),
+(3, 23, 1),
+(4, 19, 1),
+(5, 16, 1),
+(6, 21, 1),
+(7, 14, 1),
+(8, 15, 1),
+(9, 20, 1),
+(10, 18, 1),
+(11, 22, 1);
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
 
 INSERT INTO `etudiant` (`id_etud`, `matricule`, `nom`, `prenom`, `lieu_naiss`, `Date_naiss`, `id_semestre`, `annee`, `email`, `id_role`, `id_groupe`, `id_dep`, `groupe_td`) VALUES
 (1, '22001', 'Abderahman', 'Mohamed Mahmoud Mezid', '', '0000-00-00', 2, '2023-2024', '22001@supnum.mr', 3, 1, 3, 'TD2'),
@@ -417,186 +496,150 @@ INSERT INTO `etudiant` (`id_etud`, `matricule`, `nom`, `prenom`, `lieu_naiss`, `
 (137, '22087', 'Mariem', 'Tfiel', NULL, NULL, 3, '2023', '22087@supnum.mr', 3, NULL, 4, NULL);
 
 -- --------------------------------------------------------
-
---
--- Structure de la table `fichiers_reponses`
---
-
-DROP TABLE IF EXISTS `fichiers_reponses`;
-CREATE TABLE IF NOT EXISTS `fichiers_reponses` (
-  `id_fich_rep` int NOT NULL AUTO_INCREMENT,
-  `id_rep` int NOT NULL,
-  `nom_fichiere` varchar(255) NOT NULL,
-  `chemin_fichiere` varchar(255) NOT NULL,
-  PRIMARY KEY (`id_fich_rep`),
-  KEY `id_rep` (`id_rep`)
-) ENGINE=MyISAM AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `fichiers_reponses`
---
-
-INSERT INTO `fichiers_reponses` (`id_fich_rep`, `id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES
-(1, 1, 'bac.sqlite', '../files/reponses/23001/65a06207bbf1a1.12366298.sqlite'),
-(2, 2, 'data.sqlite', '../files/reponses/23001/65a09cf5e17506.44085602.sqlite'),
-(3, 3, 'Doc1.docx', '../files/reponses/23001/65a0cb5851f995.77410468.docx'),
-(4, 4, 'Doc1.docx', '../files/reponses/23001/65a0cc53392f65.25466983.docx'),
-(5, 5, 'Doc1.docx', '../files/reponses/23001/65a0cd6c65c772.93419097.docx'),
-(6, 6, 'Doc1.docx', '../files/reponses/23001/65a0ce310135b8.32895678.docx'),
-(7, 7, 'Doc1.docx', '../files/reponses/23001/65a0d03bf3e7a2.55020838.docx'),
-(8, 8, 'Doc1.docx', '../files/reponses/23001/65a0d223db03a5.84642049.docx'),
-(9, 9, 'Doc1.docx', '../files/reponses/23001/65a0d3446ad748.33975800.docx'),
-(10, 10, 'Doc1.docx', '../files/reponses/23001/65a0d4758425b3.56451427.docx'),
-(11, 11, 'Doc1.docx', '../files/reponses/23001/65a0d7484662b7.82411665.docx'),
-(12, 12, 'Doc1.docx', '../files/reponses/23001/65a0d81e071fb2.32820037.docx'),
-(13, 13, 'Doc1.docx', '../files/reponses/22001/65a3641ac20b48.75252228.docx'),
-(14, 14, 'Doc1.docx', '../files/reponses/22001/65a364383519b0.93008554.docx'),
-(15, 16, 'TP_AD_Chiffres.pdf', '../files/reponses/23001/65a364b49996a6.10954029.pdf'),
-(16, 18, 'Doc1.docx', '../files/reponses/23001/65a365c33fdf85.36827331.docx'),
-(17, 19, 'Doc1.docx', '../files/reponses/22001/65a366e9739508.54744202.docx'),
-(18, 19, 'TP_AD_Chiffres.pdf', '../files/reponses/22001/65a36704360a84.14013073.pdf'),
-(19, 20, '22001_Doc1 (1).docx', '../files/reponses/22001/65a3823091e7c5.62049629.docx'),
-(20, 0, 'Doc1.docx', '../files/reponses/23001/65a38cdcd77772.96280868.docx'),
-(21, 0, 'Doc1.docx', '../files/reponses/23001/65a38ce86f8b10.14055769.docx'),
-(22, 0, '22001_Doc1 (1).docx', '../files/reponses/23001/65a38cf4341a79.55826052.docx'),
-(23, 0, '22001_Doc1.docx', '../files/reponses/23001/65a38d17871ca4.48119707.docx'),
-(24, 0, 'graphe.pdf', '../files/reponses/23001/65a38d21e48ff4.28983867.pdf'),
-(25, 0, 'tp2-exo1.py', '../files/reponses/23001/65a38d2e913658.10478976.py'),
-(26, 0, 'tp2-exo1.py', '../files/reponses/23001/65a38d66ed78c1.98959671.py'),
-(27, 0, 'Doc1.docx', '../files/reponses/23001/65a38d71d05a99.83879942.docx'),
-(28, 0, '22001_Doc1.docx', '../files/reponses/23001/65a38d9827d884.43834592.docx'),
-(29, 21, '22001_Doc1.docx', '../files/reponses/23001/65a38dc94148f8.26984745.docx'),
-(30, 21, '22001_Doc1.docx', '../files/reponses/23001/65a38dde0b5124.08166280.docx'),
-(31, 21, '65a365c33fdf85.36827331.docx', '../files/reponses/23001/65a38f724977b1.56690267.docx'),
-(32, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39a23047e48.46172792.docx'),
-(33, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39a530704a7.31456560.docx'),
-(34, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39a5b579491.28322572.docx'),
-(35, 0, 'TP_AD_Chiffres.pdf', '../files/reponses/23001/65a39a698994c8.92851203.pdf'),
-(36, 0, 'TP_AD_Chiffres.pdf', '../files/reponses/23001/65a39a86eedce4.66636693.pdf'),
-(37, 0, '22001_Doc1.docx', '../files/reponses/23001/65a39a906bf263.60552536.docx'),
-(38, 0, 'graphe (2).pdf', '../files/reponses/23001/65a39a9a357075.04242111.pdf'),
-(39, 0, 'graphe (2).pdf', '../files/reponses/23001/65a39ebf8a7ab5.50909045.pdf'),
-(40, 0, 'TP_AD_Chiffres.pdf', '../files/reponses/23001/65a39ec82e1e39.36400319.pdf'),
-(41, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39edcd35252.87293432.docx'),
-(42, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39efb3a0a03.25088498.docx'),
-(43, 0, '22001_Doc1 (2).docx', '../files/reponses/23001/65a39f043c8e72.32910826.docx'),
-(44, 0, 'graphe.pdf', '../files/reponses/23001/65a39f6dacc455.94064837.pdf'),
-(45, 0, 'graphe.pdf', '../files/reponses/23001/65a39fba068d28.28834735.pdf'),
-(46, 0, 'pse.sql', '../files/reponses/23001/65a39fd30a5da4.67819750.sql'),
-(47, 0, 'TP1_DevOps.pdf', '../files/reponses/23001/65a39fde2eda05.96162280.pdf'),
-(48, 0, 'TP1_DevOps.pdf', '../files/reponses/23001/65a3a02b4f63c8.45288436.pdf'),
-(49, 0, 'TP1_DevOps.pdf', '../files/reponses/23001/65a3a040081c78.99779688.pdf'),
-(50, 0, 'TP4.pdf', '../files/reponses/23001/65a3a04b25bbe4.21177212.pdf'),
-(51, 22, 'TP4.pdf', '../files/reponses/23001/65a3a077f09187.19304810.pdf'),
-(52, 22, 'graphe.pdf', '../files/reponses/23001/65a3a1c530fa84.53101193.pdf'),
-(53, 23, 'tp2-exo3.py', '../files/reponses/23001/65a3a1e95a4ed5.76490737.py'),
-(61, 25, 'six.png', '../files/reponses/22001/65a79fc8eeb0d8.30896743.png'),
-(60, 25, 'TP_AD_Chiffres.pdf', '../files/reponses/22001/65a79fc8edf3f8.47166525.pdf'),
-(59, 24, 'TP_RO_03_Knapsack.pdf', '../files/reponses/22001/65a79e26062ad3.26451612.pdf'),
-(58, 24, 'unnamed.png', '../files/reponses/22001/65a79e19584d56.59693789.png'),
-(62, 25, 'Note_Algorithmique et programmation C++2024-01-13 14_51_12.xls', '../files/reponses/22001/65a79fd42cff92.79899174.xls'),
-(63, 26, 'Note_Algorithmique et programmation C++2024-01-13 14_51_12.xls', '../files/reponses/23001/65a7a003712351.13393327.xls'),
-(64, 26, 'Doc1.docx', '../files/reponses/23001/65a7a0037272c0.57302447.docx'),
-(65, 27, 'unnamned.png', '../files/reponses/23001/65a7a9449d4a32.28197356.png'),
-(66, 27, 'unnamed.png', '../files/reponses/23001/65a7a9449e3946.46047231.png'),
-(67, 27, 'Note_Algorithmique et programmation C++2024-01-15 15_00_22.xls', '../files/reponses/23001/65a7a9449ef250.51777490.xls'),
-(68, 28, 'Absence-v2 (1).xlsx', '../files/reponses/23001/65a8df797e3a74.02132176.xlsx'),
-(69, 28, 'file.txt', '../files/reponses/23001/65a8df79815589.78729188.txt'),
-(70, 28, 'Note_Algorithmique et programmation C++2024-01-17 08_46_19.xls', '../files/reponses/23001/65a8df7981aa79.37690305.xls'),
-(71, 28, 'Note_Algorithmique et programmation C++2024-01-17 08_45_56.xls', '../files/reponses/23001/65a8df79822361.83068773.xls'),
-(72, 29, 'Absence-v2 (1).xlsx', '../files/reponses/22001/65a8df9defe6e9.14362476.xlsx'),
-(73, 29, 'file.txt', '../files/reponses/22001/65a8df9df04ab3.51442092.txt'),
-(74, 29, 'Note_Algorithmique et programmation C++2024-01-17 08_46_19.xls', '../files/reponses/22001/65a8df9df0ba41.55304360.xls'),
-(75, 29, 'Note_Algorithmique et programmation C++2024-01-17 08_45_56.xls', '../files/reponses/22001/65a8df9df10509.90975462.xls'),
-(76, 29, 'Absence-v2.xlsx', '../files/reponses/22001/65a8df9df1a9f7.17733371.xlsx'),
-(77, 30, 'Test G1.pdf', '../files/reponses/22001/65aba8622bd1b4.20419831.pdf'),
-(78, 31, 'Test G1.pdf', '../files/reponses/22001/65aba896ea44c0.80359250.pdf'),
-(79, 32, 'Formulaire sans titre (réponses) (1).xlsx', '../files/reponses/22001/65ac83d2a893a3.27211185.xlsx'),
-(80, 33, 'Formulaire sans titre (réponses) (1).xlsx', '../files/reponses/22033/65afa45d4313b0.22905762.xlsx'),
-(81, 34, 'Formulaire sans titre (réponses) (1).xlsx', '../files/reponses/22033/65afa53d0a1d05.03788755.xlsx');
-
 -- --------------------------------------------------------
 
---
--- Structure de la table `fichiers_soumission`
---
 
-DROP TABLE IF EXISTS `fichiers_soumission`;
-CREATE TABLE IF NOT EXISTS `fichiers_soumission` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_sous` int NOT NULL,
-  `nom_fichier` varchar(255) NOT NULL,
-  `chemin_fichier` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_sous` (`id_sous`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `enseignant` (`id_ens`, `nom`, `prenom`, `Date_naiss`, `lieu_naiss`, `email`, `num_tel`, `num_whatsapp`, `diplome`, `grade`, `id_role`) VALUES
+(34, 'Moctar', 'Abderrahmane Sidi El', '0000-00-00', 'NKTT', 'abderrahmane.sidi-elmoctar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(35, 'Cheikhna', 'Aboubecrine', '0000-00-00', 'NKTT', 'aboubacrine.cheikhna@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(36, 'Aboubecrine', 'Aicha', '0000-00-00', 'NKTT', 'aicha.aboubecrine@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(37, 'Mohamedou', 'Debagh', '0000-00-00', 'NKTT', 'mohamedou.debagh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(38, 'Sow', 'Ahmed Adama', '0000-00-00', 'NKTT', 'sow.ahmed.adama@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(39, 'Elhadj', 'El Hacen', '0000-00-00', 'NKTT', 'elhacen.elhadj@supnum.m', 22420813, 22420813, 'Prof', 'Prof', 2),
+(40, 'Babou', 'Hafeth M. Mohamed', '0000-00-00', 'NKTT', 'hafedh.mohamed-babou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(41, 'Rabeh Hammady', ' Ahmed Dine', '0000-00-00', 'NKTT', 'hammady.rabeh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(42, 'Guerea Mohamed', 'Cheikh Nagi', '0000-00-00', 'NKTT', 'mcheikh.guerea@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(43, 'Aly ', 'Nagi', '0000-00-00', 'NKTT', 'nagi.taleb-aly@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(44, 'Bellal Abada', 'Mariem ', '0000-00-00', 'NKTT', 'mariem.bellal@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(45, 'Biha', 'Sidi Mohamed Lemine', '0000-00-00', 'NKTT', 'sidi.biha@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(46, 'Soufi', 'Brahim Med Nouh Cheikh', '0000-00-00', 'NKTT', 'brahim.cheikh-soufi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(47, 'Cheikh', 'Abdellahi Ahmed', '0000-00-00', 'NKTT', 'abdellahi.cheikh@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(48, 'khourou', 'El Moustapha Saleck', '0000-00-00', 'NKTT', 'el-moustapha.ekhourou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(49, 'Sidaty', 'Sidaty Mohamedou', '0000-00-00', 'NKTT', 'sidaty.mohamedou@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(50, 'ElAoun', 'Moustapha Sidi', '0000-00-00', 'NKTT', 'moustapha.elaoun@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(51, 'Soumare', 'Abdallahi Moussa', '0000-00-00', 'NKTT', 'abdellahi.soumare@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(52, 'Bakar', 'Ahmed Ahmed', '0000-00-00', 'NKTT', 'ahmed.bakar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(53, 'Abdallahi', 'Mariem Mohamed', '0000-00-00', 'NKTT', 'mariem.abdallahi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(54, 'Louly', 'Mohamed Aly', '0000-00-00', 'NKTT', 'ma.louly@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(55, 'Baba', 'Elyekheir Mint Yahya', '0000-00-00', 'NKTT', 'eluekheir-yahaya.baba@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(56, 'ElHassen', 'Aichetou', '0000-00-00', 'NKTT', 'aichetou.el-hassen@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(57, 'Khiar', 'Bouha Neama Cheikh Taleb', '0000-00-00', 'NKTT', 'bouha.ch-ta-khiar@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(58, 'Abdy', 'Sidi Mohamed', '0000-00-00', 'NKTT', 'sidimohamed.abdy@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(59, 'Lam', 'Mamadou', '0000-00-00', 'NKTT', 'mamadou.lam@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(60, 'Abdellahi', 'Hama Cheikh', '0000-00-00', 'NKTT', 'hama.abdellahi@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(61, 'Selam', 'Varha Abd', '0000-00-00', 'NKTT', 'varha.abdselam@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(62, 'Mohamed', 'Saghir', '0000-00-00', 'NKTT', 'saghir.mohamed@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(63, 'Maouloud', 'Mouhamed Sidi Mouhamed', '0000-00-00', 'NKTT', 'msidi.maouloud@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(64, 'vall', 'Moctar Med', '0000-00-00', 'NKTT', 'moctar.ahmedval@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(65, 'Sejad', 'Ahmed', '0000-00-00', 'NKTT', 'ahmed.sejad@supnum.mr', 22420813, 22420813, 'Prof', 'Prof', 2),
+(66, 'Ahmed Sidi', 'Mohamed Lamine', '1984-09-02', 'nktt', 'm-lamine.ahmed-sidi@supnum.mr', NULL, NULL, 'master', 'maître assistant', 2),
+(1, 'Cheikh', 'Dhib', '1983-01-22', 'nktt', 'cheikh.dhib@supnum.mr', NULL, NULL, 'doctor', 'directeur', 2),
+(2, 'Moussa', 'Demba', '1989-10-12', 'nkt', 'moussa.ba@supnum.mr', NULL, NULL, 'doctor', 'directeur adjoint', 2),
+(3, 'Meya', 'Haroune', '1993-06-22', 'nktt', 'meya.haroune@supnum.mr', NULL, NULL, 'doctor', 'prof', 2),
+(4, 'Sidi Mohamed', 'Ahmed', '1995-10-27', 'Rosso', 'sidimohamed.ahmed@supnum.mr', NULL, NULL, 'doctor', 'maître assistant', 2),
+(7, 'sidi', 'soueina', '1983-01-22', 'nktt', 'sidi.soueina@supnum.mr', NULL, NULL, 'doctor', 'prof', 2),
+(80, 'Mamadou', 'Diallo', '1984-09-02', 'nktt', 'mamadou.diallo@supnum.mr', NULL, NULL, 'master', 'maître assistant', 2),
+(81, 'ElMamy ', 'Sidi Boubacar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(82, 'Fatimetou ', ' Abdou ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(83, 'Rifaa ', '  Sadegh ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(84, 'EL Hacen', 'Elhadj ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2);
 
---
--- Déchargement des données de la table `fichiers_soumission`
---
-
-INSERT INTO `fichiers_soumission` (`id`, `id_sous`, `nom_fichier`, `chemin_fichier`) VALUES
-(1, 3, 'Movie.java', '../files/Dev110/65a06182664664.77897075.java'),
-(2, 4, 'Doc1.docx', '../files/Dev110/65a0b1a94a3341.65788730.docx'),
-(3, 9, 'Doc1.docx', '../files/Dev110/65a0bb3b8fd600.55115976.docx'),
-(4, 22, '65a365c33fdf85.36827331.docx', '../files/Dev110/65a3767aa6c713.42531133.docx'),
-(5, 21, 'TP_AD_Chiffres.pdf', '../files/Dev110/65a38919478233.21570169.pdf'),
-(6, 21, 'graphe (3).pdf', '../files/Dev110/65a3894bd3d116.66013721.pdf'),
-(7, 0, 'Test G1.pdf', '../files//65ab8ccd283644.00454951.pdf'),
-(8, 23, 'Test G1.pdf', '../files/Dev110/65ab8d72537307.01557710.pdf'),
-(9, 0, 'Test G1.pdf', '../files//65ab8da98a7be9.12597012.pdf'),
-(10, 0, 'Test G1.pdf', '../files//65ab8e191e4cd6.48507196.pdf'),
-(11, 0, 'Test G1.pdf', '../files//65ab8e4be5f265.60194480.pdf'),
-(12, 0, 'Test G1.pdf', '../files//65ab8f1876da53.32048577.pdf'),
-(13, 24, 'Test G1.pdf', '../files/Dev110/65ab96fee7da08.54453520.pdf'),
-(14, 25, 'Test G1.pdf', '../files/Dev110/65ab97f0bbaaa0.23941042.pdf'),
-(15, 26, 'Test G1.pdf', '../files/Dev110/65ab99f7558022.28750815.pdf');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `groupe`
---
-
-DROP TABLE IF EXISTS `groupe`;
-CREATE TABLE IF NOT EXISTS `groupe` (
-  `id_groupe` int NOT NULL AUTO_INCREMENT,
-  `libelle` varchar(50) DEFAULT NULL,
-  `id_dep` int DEFAULT NULL,
-  PRIMARY KEY (`id_groupe`),
-  KEY `id_dep` (`id_dep`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `groupe`
---
-
-INSERT INTO `groupe` (`id_groupe`, `libelle`, `id_dep`) VALUES
-(1, 'G1', 4),
-(2, 'G2', 4),
-(3, 'G3', 4);
 
 -- --------------------------------------------------------
+-- --------------------------------------------------------
 
---
--- Structure de la table `inscription`
---
 
-DROP TABLE IF EXISTS `inscription`;
-CREATE TABLE IF NOT EXISTS `inscription` (
-  `id_insc` int NOT NULL AUTO_INCREMENT,
-  `id_etud` int NOT NULL,
-  `id_matiere` int NOT NULL,
-  `id_semestre` int NOT NULL,
-  PRIMARY KEY (`id_insc`),
-  KEY `id_matiere` (`id_matiere`),
-  KEY `id_semestre` (`id_semestre`),
-  KEY `id_etud` (`id_etud`)
-) ENGINE=MyISAM AUTO_INCREMENT=1171 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `enseigner` (`id_matiere`, `id_ens`, `id_groupe`, `id_type_matiere`) VALUES
+(13, 39, 2, 2),
+(13, 40, 1, 1),
+(13, 38, 1, 3),
+(17, 36, 2, 4),
+(17, 2, 1, 2),
+(17, 2, 2, 1),
+(17, 2, 1, 1),
+(18, 3, 2, 13),
+(13, 44, 1, 2),
+(23, 36, 2, 1),
+(23, 36, 2, 4),
+(23, 35, 2, 5),
+(23, 43, 1, 1),
+(23, 36, 2, 5),
+(23, 43, 1, 2),
+(23, 43, 1, 3),
+(23, 2, 3, 1),
+(23, 2, 3, 6),
+(18, 1, 1, 1),
+(18, 3, 2, 1),
+(18, 3, 3, 1),
+(18, 60, 1, 9),
+(17, 43, 2, 5),
+(17, 2, 1, 10),
+(17, 35, 2, 13),
+(17, 43, 2, 15),
+(21, 7, 1, 1),
+(21, 7, 1, 8),
+(21, 7, 2, 1),
+(21, 7, 2, 8),
+(21, 7, 3, 1),
+(13, 39, 2, 2),
+(13, 40, 1, 1),
+(13, 38, 1, 3),
+(17, 36, 2, 4),
+(17, 2, 1, 2),
+(17, 2, 2, 1),
+(17, 2, 1, 1),
+(18, 3, 2, 13),
+(13, 44, 1, 2),
+(23, 36, 2, 1),
+(23, 36, 2, 4),
+(23, 35, 2, 5),
+(23, 43, 1, 1),
+(23, 36, 2, 5),
+(23, 43, 1, 2),
+(23, 43, 1, 3),
+(23, 2, 3, 1),
+(23, 2, 3, 6),
+(18, 1, 1, 1),
+(18, 3, 2, 1),
+(18, 3, 3, 1),
+(18, 60, 1, 9),
+(17, 43, 2, 5),
+(17, 2, 1, 10),
+(17, 35, 2, 13),
+(17, 43, 2, 15),
+(21, 7, 1, 1),
+(21, 7, 1, 8),
+(21, 7, 2, 1),
+(21, 7, 2, 8),
+(21, 7, 3, 1),
+(21, 7, 3, 8),
+(20, 36, 1, 2),
+(20, 43, 2, 2),
+(20, 36, 1, 3),
+(20, 43, 2, 3),
+(20, 36, 1, 1),
+(20, 43, 2, 1),
+(20, 66, 3, 1),
+(20, 66, 3, 2),
+(20, 66, 3, 3),
+(21, 7, 3, 8),
+(13, 81, 1, 9),
+(13, 80, 1, 3),
+(13, 4, 2, 1),
+(17, 39, 1, 9),
+(17, 39, 3, 6),
+(17, 39, 1, 11),
+(17, 39, 3, 14),
+(18, 47, 1, 3),
+(18, 47, 1, 10),
+(18, 39, 1, 11),
+(18, 47, 2, 17),
+(19, 58, 1, 1);
 
---
--- Déchargement des données de la table `inscription`
---
+
+
+-- --------------------------------------------------------
+-- --------------------------------------------------------
 
 INSERT INTO `inscription` (`id_insc`, `id_etud`, `id_matiere`, `id_semestre`) VALUES
 (1, 1, 14, 1),
@@ -1753,308 +1796,3 @@ INSERT INTO `inscription` (`id_insc`, `id_etud`, `id_matiere`, `id_semestre`) VA
 (1170, 137, 13, 1);
 
 -- --------------------------------------------------------
-
---
--- Structure de la table `matiere`
---
-
-DROP TABLE IF EXISTS `matiere`;
-CREATE TABLE IF NOT EXISTS `matiere` (
-  `id_matiere` int NOT NULL AUTO_INCREMENT,
-  `code` varchar(20) DEFAULT NULL,
-  `libelle` varchar(50) DEFAULT NULL,
-  `specialite` varchar(20) DEFAULT NULL,
-  `id_module` int DEFAULT NULL,
-  `id_semestre` int DEFAULT NULL,
-  PRIMARY KEY (`id_matiere`),
-  UNIQUE KEY `code` (`code`),
-  KEY `id_module` (`id_module`),
-  KEY `id_semestre` (`id_semestre`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `matiere`
---
-
-INSERT INTO `matiere` (`id_matiere`, `code`, `libelle`, `specialite`, `id_module`, `id_semestre`) VALUES
-(13, 'Dev110', 'Algorithmique et programmation C++', 'TC', 1, 1),
-(14, 'MAI110', 'Algèbre', 'TC', 3, 1),
-(15, 'MAI111', 'Analyse', 'TC', 3, 1),
-(16, 'DPR111', 'Anglais', 'TC', 4, 1),
-(17, 'Dev111', 'Introduction aux bases de données', 'TC', 1, 1),
-(18, 'SYR110', 'Base d\'informatique', 'TC', 2, 1),
-(19, 'DPR110', 'Communication', 'TC', 4, 1),
-(20, 'MAI112', 'Certification PIX 1', 'TC', 3, 1),
-(21, 'DPR112', 'Projet personnel et professionnel 1', 'TC', 4, 1),
-(22, 'SYR111', 'Concepts de base de réseaux informatiques', 'TC', 2, 1),
-(23, 'Dev112', 'Technologies web', 'TC', 1, 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `matiere_semestre`
---
-
-DROP TABLE IF EXISTS `matiere_semestre`;
-CREATE TABLE IF NOT EXISTS `matiere_semestre` (
-  `id_matiere_semestre` int NOT NULL AUTO_INCREMENT,
-  `id_matiere` int DEFAULT NULL,
-  `id_semestre` int DEFAULT NULL,
-  PRIMARY KEY (`id_matiere_semestre`),
-  KEY `id_matiere` (`id_matiere`),
-  KEY `id_semestre` (`id_semestre`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `matiere_semestre`
---
-
-INSERT INTO `matiere_semestre` (`id_matiere_semestre`, `id_matiere`, `id_semestre`) VALUES
-(1, 13, 1),
-(2, 17, 1),
-(3, 23, 1),
-(4, 19, 1),
-(5, 16, 1),
-(6, 21, 1),
-(7, 14, 1),
-(8, 15, 1),
-(9, 20, 1),
-(10, 18, 1),
-(11, 22, 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `module`
---
-
-DROP TABLE IF EXISTS `module`;
-CREATE TABLE IF NOT EXISTS `module` (
-  `id_module` int NOT NULL AUTO_INCREMENT,
-  `nom_module` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_module`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `module`
---
-
-INSERT INTO `module` (`id_module`, `nom_module`) VALUES
-(1, 'Programmation et développement 1'),
-(2, 'Systèmes et Réseaux'),
-(3, 'Outils mathématiques et informatiques'),
-(4, 'Développement personnel');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `reponses`
---
-
-DROP TABLE IF EXISTS `reponses`;
-CREATE TABLE IF NOT EXISTS `reponses` (
-  `id_rep` int NOT NULL AUTO_INCREMENT,
-  `description_rep` varchar(200) DEFAULT NULL,
-  `date` datetime DEFAULT CURRENT_TIMESTAMP,
-  `render` tinyint(1) DEFAULT '0',
-  `confirmer` tinyint(1) DEFAULT '0',
-  `note` float DEFAULT '0',
-  `id_sous` int NOT NULL,
-  `id_etud` int NOT NULL,
-  PRIMARY KEY (`id_rep`),
-  KEY `id_sous` (`id_sous`),
-  KEY `id_etud` (`id_etud`)
-) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `reponses`
---
-
-INSERT INTO `reponses` (`id_rep`, `description_rep`, `date`, `render`, `confirmer`, `note`, `id_sous`, `id_etud`) VALUES
-(34, 'hhh', '2024-01-23 11:38:41', 0, 1, 0, 23, 127),
-(28, 'gt', '2024-01-18 08:21:18', 0, 1, 9, 22, 19),
-(29, 'ghgg', '2024-01-20 10:47:48', 0, 1, 20, 22, 1),
-(30, 'hello', '2024-01-19 23:02:58', 0, 0, 0, 26, 1),
-(31, 'hello', '2024-01-19 23:03:50', 0, 0, 0, 21, 1),
-(32, 'hello', '2024-01-21 02:43:55', 0, 1, 50, 24, 1),
-(33, 'GGG', '2024-01-23 11:35:01', 0, 1, 0, 22, 127);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `role`
---
-
-DROP TABLE IF EXISTS `role`;
-CREATE TABLE IF NOT EXISTS `role` (
-  `id_role` int NOT NULL AUTO_INCREMENT,
-  `profile` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_role`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `role`
---
-
-INSERT INTO `role` (`id_role`, `profile`) VALUES
-(1, 'Administrateur'),
-(2, 'Enseignant'),
-(3, 'Étudiant');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `semestre`
---
-
-DROP TABLE IF EXISTS `semestre`;
-CREATE TABLE IF NOT EXISTS `semestre` (
-  `id_semestre` int NOT NULL AUTO_INCREMENT,
-  `nom_semestre` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_semestre`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `semestre`
---
-
-INSERT INTO `semestre` (`id_semestre`, `nom_semestre`) VALUES
-(1, 'S1'),
-(2, 'S2'),
-(3, 'S3'),
-(4, 'S4'),
-(5, 'S5'),
-(6, 'S6');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `soumission`
---
-
-DROP TABLE IF EXISTS `soumission`;
-CREATE TABLE IF NOT EXISTS `soumission` (
-  `id_sous` int NOT NULL AUTO_INCREMENT,
-  `titre_sous` varchar(50) DEFAULT NULL,
-  `description_sous` varchar(500000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `person_contact` varchar(100) DEFAULT NULL,
-  `id_ens` int DEFAULT NULL,
-  `date_debut` datetime NOT NULL,
-  `date_fin` datetime NOT NULL,
-  `valide` tinyint(1) DEFAULT NULL,
-  `status` int DEFAULT '0',
-  `id_matiere` int DEFAULT NULL,
-  `id_type_sous` int DEFAULT NULL,
-  PRIMARY KEY (`id_sous`),
-  KEY `id_matiere` (`id_matiere`),
-  KEY `id_ens` (`id_ens`),
-  KEY `id_type_sous` (`id_type_sous`)
-) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `soumission`
---
-
-INSERT INTO `soumission` (`id_sous`, `titre_sous`, `description_sous`, `person_contact`, `id_ens`, `date_debut`, `date_fin`, `valide`, `status`, `id_matiere`, `id_type_sous`) VALUES
-(22, 'test cloturer', 'hhhh', 'sidi.med@supnum.mr', 4, '2024-01-13 17:51:00', '2024-02-03 17:51:00', 0, 0, 13, 1),
-(26, 'test cloturer fin', 'test', 'sidi.med@supnum.mr', 4, '2024-01-19 22:01:00', '2030-01-01 21:52:00', 0, 0, 13, 1),
-(21, 'test_fichie', 'test telechargement des fichie', '4', 4, '2024-01-13 16:37:00', '2025-02-03 16:37:00', 0, 0, 13, 2),
-(23, 'hhhhhhhhhhhhhhhhhhhhhhhhhh', '', 'sidi.med@supnum.mr', 4, '2024-01-18 21:07:00', '2024-02-05 21:07:00', 0, 0, 13, 3),
-(24, 'testttt', 'hhhh', 'sidi.med@supnum.mr', 4, '2024-01-19 21:48:00', '2024-01-04 21:48:00', 0, 0, 13, 2),
-(25, 'test cloturer 2', 'jn', 'sidi.med@supnum.mr', 4, '2024-01-19 21:52:00', '2030-02-01 21:52:00', 0, 0, 13, 2);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `type_matiere`
---
-
-DROP TABLE IF EXISTS `type_matiere`;
-CREATE TABLE IF NOT EXISTS `type_matiere` (
-  `id_type_matiere` int NOT NULL AUTO_INCREMENT,
-  `libelle_type` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_type_matiere`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `type_matiere`
---
-
-INSERT INTO `type_matiere` (`id_type_matiere`, `libelle_type`) VALUES
-(1, 'CM'),
-(2, 'TP'),
-(3, 'TD'),
-(4, 'TP3'),
-(5, 'TP4'),
-(6, 'TP5'),
-(7, 'TP6'),
-(8, 'TP1'),
-(9, 'TP2'),
-(10, 'TD1'),
-(11, 'TD2'),
-(13, 'TD3'),
-(14, 'TD5'),
-(16, 'TD6'),
-(15, 'TP4'),
-(17, 'TD4');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `type_soumission`
---
-
-DROP TABLE IF EXISTS `type_soumission`;
-CREATE TABLE IF NOT EXISTS `type_soumission` (
-  `id_type_sous` int NOT NULL AUTO_INCREMENT,
-  `libelle` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_type_sous`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `type_soumission`
---
-
-INSERT INTO `type_soumission` (`id_type_sous`, `libelle`) VALUES
-(1, 'Examen'),
-(2, 'Devoir'),
-(3, 'TP Notée');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `utilisateur`
---
-
-DROP TABLE IF EXISTS `utilisateur`;
-CREATE TABLE IF NOT EXISTS `utilisateur` (
-  `id_user` int NOT NULL AUTO_INCREMENT,
-  `login` varchar(50) DEFAULT NULL,
-  `pwd` varchar(100) DEFAULT NULL,
-  `active` tinyint(1) DEFAULT '1' COMMENT '1=Active | 0=Inactive',
-  `code` varchar(20) DEFAULT NULL,
-  `id_role` int DEFAULT NULL,
-  PRIMARY KEY (`id_user`),
-  KEY `id_role` (`id_role`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Déchargement des données de la table `utilisateur`
---
-
-INSERT INTO `utilisateur` (`id_user`, `login`, `pwd`, `active`, `code`, `id_role`) VALUES
-(1, 'admin@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 1),
-(2, '22018@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 3),
-(3, '22053@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 3),
-(4, '22086@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 3),
-(5, '22014@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 3),
-(6, 'sidi.med@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, '0', 2),
-(7, '23001@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 3),
-(8, '22001@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 3),
-(9, 'meya.haroune@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 2),
-(10, '22033@supnum.mr', '25f9e794323b453885f5181f1b624d0b', 1, NULL, 3);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
