@@ -42,7 +42,20 @@ if (isset($_GET["id_matiere"])){
 
  include_once "../connexion.php";
  include "nav_bar.php";
+ if (isset($_SESSION['ajout_reussi']) && $_SESSION['ajout_reussi'] === true) {
+  echo "<script>
+  Swal.fire({
+      title: 'Ajout réussi !',
+      text: 'La soumission a été ajouté avec succès.',
+      icon: 'success',
+      confirmButtonColor: '#3099d6',
+      confirmButtonText: 'OK'
+  });
+  </script>";
 
+  // Supprimer l'indicateur de succès de la session
+  unset($_SESSION['ajout_reussi']);
+}
 
 $req_sous1 = "SELECT DISTINCT soumission.*, type_soumission.libelle AS 'libelle_type', matiere.libelle AS 'libelle_matiere', nom, prenom FROM
 soumission ,matiere,enseignant,enseigner,type_soumission
@@ -88,20 +101,7 @@ $type_sous = "SELECT * FROM type_soumission";
 $type_sous_qry = mysqli_query($conn, $type_sous);
 
 
-if (isset($_SESSION['ajout_reussi']) && $_SESSION['ajout_reussi'] === true) {
-  echo "<script>
-  Swal.fire({
-      title: 'Ajout réussi !',
-      text: 'La soumission a été ajouté avec succès.',
-      icon: 'success',
-      confirmButtonColor: '#3099d6',
-      confirmButtonText: 'OK'
-  });
-  </script>";
 
-  // Supprimer l'indicateur de succès de la session
-  unset($_SESSION['ajout_reussi']);
-}
       
 ?>      
     <div class="content-wrapper">
