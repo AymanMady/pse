@@ -52,75 +52,74 @@ $req_sous2 = "SELECT DISTINCT soumission.*,matiere.*,type_soumission.*,type_soum
 $req2 = mysqli_query($conn, $req_sous2);
 ?>
 
-    <div class="content-wrapper">
-    <div class="content">
-    <div class="scrollmenu">
-            <h3 class="page-title">
-            <span class="page-title-icon bg-gradient-primary text-white me-2">
-            <i class="mdi mdi-calendar-clock"></i>
-            </span> Soumission / Soumission en Ligne
-            </h3>
-        <div class="row">
-                <div class="col-lg-12 grid-margin stretch-card">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Soumission en Ligne :</h4>
-                            <br>
-                            <table id="example" class="table table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Code</th>
-                                        <th>Titre</th>
-                                        <th>Date de début </th>
-                                        <th>Type de Soumission</th>
-                                        <th>Date fin</th>
-                                        <th></th>
-                                        <th>Actions</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-                                if(mysqli_num_rows($req1)>0 or mysqli_num_rows($req2)>0) {
+<div class="content-wrapper">
+  <div class="content">
+      <h3 class="page-title">
+        <span class="page-title-icon bg-gradient-primary text-white me-2">
+          <i class="mdi mdi-calendar-clock"></i>
+        </span> Soumission / Soumission en Ligne
+      </h3>
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Soumission en Ligne :</h4>
+              <br>
+              <div class="table-responsive">
+                <table id="example" class="table table-bordered" style="width:100%">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Titre</th>
+                      <th>Date de début </th>
+                      <th>Type de Soumission</th>
+                      <th>Date fin</th>
+                      <th></th>
+                      <th>Actions</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    if (mysqli_num_rows($req1) > 0 or mysqli_num_rows($req2) > 0) {
 
-                                    while($row=mysqli_fetch_assoc($req1)){ 
-                                       ?>
-                                  <tr >
-                                    <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['code']?></td>
-                                    <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['titre_sous']?></td>
-                                    <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo '<input type="datetime-local" readonly id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_debut'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >'; ?></td>
-                                    <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['libelle_type']?></td>
-                                    <td>
-                                        <?php
-                                          if ((strtotime($row['date_fin']) - time()) <= 600) {
-                                            echo '<input type="datetime-local" id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" class="text-danger" >';
-                                          }else{
-                                            echo '<input type="datetime-local"  id="date-fin-'.$row['id_sous'].'" value="'.date('Y-m-d H:i:s', strtotime($row['date_fin'])).'" onchange="modifierDateFin('.$row['id_sous'].', this.value)" style="border: none;" >';
-                                          }
-                                        ?>
-                                    </td>
-                                    <td><a href="detail_soumission.php?id_sous=<?php echo $row['id_sous']?>">Detaille</a></td>
-                                    <td><a href="cloturer.php?id_sous=<?php echo $row['id_sous']?>" id="cloturer">Clôturer</a></td>
-                                    <td><a href="archiver_soumission_en_ligne.php?id_sous=<?php echo $row['id_sous']?>" id="archiver">Archiver</a></td>
-                                  </tr>
-                                <?php
-                                }
-                                ?>
-                                </tbody>
-                            </table>
-                            
-                        </div>
-                    </div>
-                </div>
+                      while ($row = mysqli_fetch_assoc($req1)) {
+                    ?>
+                        <tr>
+                          <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['code'] ?></td>
+                          <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['titre_sous'] ?></td>
+                          <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo '<input type="datetime-local" readonly id="date-fin-' . $row['id_sous'] . '" value="' . date('Y-m-d H:i:s', strtotime($row['date_debut'])) . '" onchange="modifierDateFin(' . $row['id_sous'] . ', this.value)" style="border: none;" >'; ?></td>
+                          <td class="click" onclick="redirectToDetails(<?php echo $row['id_sous']; ?>)"><?php echo $row['libelle_type'] ?></td>
+                          <td>
+                            <?php
+                            if ((strtotime($row['date_fin']) - strtotime(gmdate('Y-m-d H:i:s'))) <= 600) {
+                              echo '<input type="datetime-local" id="date-fin-' . $row['id_sous'] . '" value="' . date('Y-m-d H:i:s', strtotime($row['date_fin'])) . '" onchange="modifierDateFin(' . $row['id_sous'] . ', this.value)" style="border: none;" class="text-danger" >';
+                            } else {
+                              echo '<input type="datetime-local"  id="date-fin-' . $row['id_sous'] . '" value="' . date('Y-m-d H:i:s', strtotime($row['date_fin'])) . '" onchange="modifierDateFin(' . $row['id_sous'] . ', this.value)" style="border: none;" >';
+                            }
+                            ?>
+                          </td>
+                          <td><a href="detail_soumission.php?id_sous=<?php echo $row['id_sous'] ?>">Detaille</a></td>
+                          <td><a href="cloturer.php?id_sous=<?php echo $row['id_sous'] ?>" id="cloturer">Clôturer</a></td>
+                          <td><a href="archiver_soumission_en_ligne.php?id_sous=<?php echo $row['id_sous'] ?>" id="archiver">Archiver</a></td>
+                        </tr>
+                      <?php
+                      }
+                      ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
-      
+          </div>
         </div>
-        </div>
-        </div>
-<?php
-}
+      </div>
 
-                  
+  </div>
+</div>
+<?php
+                    }
+
+
 ?>
 <?php
 if (isset($_SESSION['ajout_reussi']) && $_SESSION['ajout_reussi'] === true) {

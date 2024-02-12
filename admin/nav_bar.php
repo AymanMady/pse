@@ -107,6 +107,12 @@
             <i class="mdi mdi-clipboard-text menu-icon"></i>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="mise_a_jour.php">
+            <span class="menu-title">Mise à jour</span>
+            <i class="mdi mdi-sync menu-icon"></i>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- partiel -->

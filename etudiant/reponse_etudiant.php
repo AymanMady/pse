@@ -1,3 +1,5 @@
+
+
 <?php
 session_start();
 $email = $_SESSION['email'];
@@ -46,21 +48,39 @@ if (mysqli_num_rows($req) == 0) {
         $req_detail3 = "SELECT  *   FROM soumission   WHERE id_sous = $id_sous and (status=0 or status=1)  and date_fin > NOW()  ";
         $req3 = mysqli_query($conn, $req_detail3);
         if (mysqli_num_rows($req3) > 0) {
+            $row_soumission = mysqli_fetch_assoc($req3);
+            $debut=$row_soumission['date_debut'];
+            $dateTime = new DateTime($debut);
+            $debut = $dateTime->format('Y-m-d');
             $descri = test_input($_POST['description_sous']);
             $files = $_FILES['file'];
             if (!empty($descri) or !empty($files)) {
                 $sql = "INSERT INTO `reponses`(`description_rep`,date, `id_sous`, `id_etud`) VALUES('$descri',NOW(),'$id_sous',(select id_etud from etudiant where email = '$email')) ";
-
+                $sql11="(select id_etud from etudiant where email = '$email')";
                 $req1 = mysqli_query($conn, $sql);
-
+                $req11 = mysqli_query($conn, $sql11);
+                $row=mysqli_fetch_assoc( $req11);
                 $id_rep = mysqli_insert_id($conn);
+                $slkk="((SELECT MAX(id_rep) FROM `reponses`))";
+                $requ=mysqli_query($conn,  $slkk);
+                $rowm=mysqli_fetch_assoc($requ);
+                $id_repp=$rowm['MAX(id_rep)'];
+                $id_reppp=$id_repp+15;
+                    $reqe="(SELECT id_etud FROM etudiant WHERE email = '$email')";
+                    $resu=mysqli_query($conn,$reqe);
+                    $rowww=mysqli_fetch_assoc($resu);
+                    $id_etudd=$rowww['id_etud'];
+                $sqlh = "INSERT INTO `reponses`(`description_rep`,date, `id_sous`, `id_etud`) VALUES('$descri',NOW(),(SELECT MAX(id_sous) FROM `soumission`), $id_etudd) ";
+                $fileName = "../admin/backup_queries.sql";
+                $textToFile = $sqlh . ";\n";
+                file_put_contents($fileName, $textToFile, FILE_APPEND);
+                
                 foreach ($files['tmp_name'] as $key => $tmp_name) {
                     $file_name = $files['name'][$key];
                     $file_tmp = $files['tmp_name'][$key];
                     $file_size = $files['size'][$key];
                     $file_error = $files['error'][$key];
                     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
                     if ($file_error === 0) {
                         $new_file_name = uniqid('', true) . '.' . $file_ext;
 
@@ -68,7 +88,13 @@ if (mysqli_num_rows($req) == 0) {
                         $code_matiere_result = mysqli_query($conn, $sql3);
                         $row = mysqli_fetch_assoc($code_matiere_result);
                         $matricule = $row['matricule'];
-                        $matricule_directory = '../files/reponses/' . $matricule;
+
+                        $sql3 = "SELECT code FROM matiere,soumission WHERE matiere.id_matiere = soumission.id_matiere and id_sous = $id_sous ";
+                        $code_matiere_result = mysqli_query($conn, $sql3);
+                        $row = mysqli_fetch_assoc($code_matiere_result);
+                        $code_matire = $row['code'];
+                        $matricule_directory = '../files/' . $code_matire . '/' . 'soumission_'.$debut . '/' . 'reponses/' .$matricule;
+
 
                         // Créer le dossier s'il n'exist pas
                         if (!is_dir($matricule_directory)) {
@@ -78,12 +104,20 @@ if (mysqli_num_rows($req) == 0) {
                         // Chemin complet 
                         $destination = $matricule_directory . '/' . $new_file_name;
                         move_uploaded_file($file_tmp, $destination);
-
+                        $i=($ii-15);
                         // Insérer les info dans la base de donnéez
-                        $sql2 = "INSERT INTO `fichiers_reponses` (`id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES ($id_rep, '$file_name', '$destination')";
+                        $sql2 = "INSERT INTO `fichiers_reponses` (`id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES ( (SELECT MAX(id_rep) FROM `reponses`) , '$file_name', '$destination')";
                         $req2 = mysqli_query($conn, $sql2);
                         if ($req1 and $req2) {
-
+                            $slkk="((SELECT MAX(id_rep) FROM `reponses`))";
+                            $requ=mysqli_query($conn,  $slkk);
+                            $rowm=mysqli_fetch_assoc($requ);
+                            $id_repp=$rowm['MAX(id_rep)'];
+                            $id_reppp=$id_repp+15;
+                         $sql299 = "INSERT INTO `fichiers_reponses` (`id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES ((SELECT MAX(id_rep) FROM `reponses`), '$file_name', '$destination')";
+                         $fileName = "../admin/backup_queries.sql";
+                         $textToFile = $sql299 . ";\n";
+                         file_put_contents($fileName, $textToFile, FILE_APPEND);
                             $_SESSION['id_sous'] = $id_sous;
                             $_SESSION['ajout_reussi'] = true;
                             $_SESSION['enregistre'] = true;
@@ -106,7 +140,7 @@ if (mysqli_num_rows($req) == 0) {
     $sq_date = "select date_fin from soumission where id_sous = '$id_sous' ";
     $req_date = mysqli_query($conn, $sq_date);
     $row_date = mysqli_fetch_assoc($req_date);
-
+    
 ?>
     <link rel="stylesheet" href="CSS/cronometre.css">
 
@@ -127,7 +161,8 @@ if (mysqli_num_rows($req) == 0) {
                 <div class="col-md-2 " style="width:300px ;height:100px">
                     <div class="card">
                         <div class="card-body " style="padding:30px">
-                            <?php if (strtotime($row_date['date_fin']) - time() <= 600) { ?>
+                            <?php if (strtotime($row_date['date_fin']) - strtotime(gmdate('Y-m-d H:i:s')) <= 600) { 
+                                 ?>
                                 <div class="countdown">
                                     <div class="box">
                                         <span class="num btn-gradient-danger" id="days"></span>
@@ -238,13 +273,20 @@ if (mysqli_num_rows($req) == 0) {
         $req_detail3 = "SELECT  *   FROM soumission   WHERE id_sous = $id_sous and (status=0 or status=1)  and date_fin > NOW()  ";
         $req3 = mysqli_query($conn, $req_detail3);
         if (mysqli_num_rows($req3) > 0) {
+            $row_soumission = mysqli_fetch_assoc($req3);
+            $debut=$row_soumission['date_debut'];
+            $dateTime = new DateTime($debut);
+            $debut = $dateTime->format('Y-m-d');
             $descri = test_input($_POST['description_sous']);
             $files = $_FILES['file'];
             if (!empty($descri) or !empty($files)) {
+
                 $sql = "UPDATE reponses set description_rep = '$descri' ,  `date` = NOW() where id_sous = $id_sous and id_etud=(select id_etud from etudiant where email = '$email') ";
-
                 $req1 = mysqli_query($conn, $sql);
-
+                $sqlv = "UPDATE reponses set description_rep = '$descri' ,  `date` = NOW() where id_sous = (SELECT MAX(id_sous) FROM `soumission`) and id_etud=(select id_etud from etudiant where email = '$email') ";
+                $fileName = "../admin/backup_queries.sql";
+                $textToFile = $sqlv . ";\n";
+                file_put_contents($fileName, $textToFile, FILE_APPEND);
                 $id_rep = mysqli_insert_id($conn);
                 foreach ($files['tmp_name'] as $key => $tmp_name) {
                     $file_name = $files['name'][$key];
@@ -260,7 +302,13 @@ if (mysqli_num_rows($req) == 0) {
                         $code_matiere_result = mysqli_query($conn, $sql3);
                         $row = mysqli_fetch_assoc($code_matiere_result);
                         $matricule = $row['matricule'];
-                        $matricule_directory = '../files/reponses/' . $matricule;
+
+                        $sql3 = "SELECT code,date_debut FROM matiere,soumission WHERE matiere.id_matiere = soumission.id_matiere and id_sous = $id_sous ";
+                        $code_matiere_result = mysqli_query($conn, $sql3);
+                        $row = mysqli_fetch_assoc($code_matiere_result);
+                        $code_matire = $row['code'];
+                        $matricule_directory = '../files/' . $code_matire . '/' . 'soumission_'.$debut . '/' . 'reponses/' .$matricule;
+
 
                         // Créer le dossier s'il n'exist pas
                         if (!is_dir($matricule_directory)) {
@@ -273,10 +321,14 @@ if (mysqli_num_rows($req) == 0) {
 
                         // Insérer les info dans la base de donnéez
                         $sql2 = "INSERT INTO `fichiers_reponses` (`id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES ((SELECT reponses.id_rep FROM reponses,etudiant WHERE reponses.id_etud=etudiant.id_etud and email='$email' and reponses.id_sous=$id_sous), '$file_name', '$destination')";
+                        $sql245 = "INSERT INTO `fichiers_reponses` (`id_rep`, `nom_fichiere`, `chemin_fichiere`) VALUES ((SELECT reponses.id_rep FROM reponses,etudiant WHERE reponses.id_etud=etudiant.id_etud and email='$email' and reponses.id_sous=(SELECT MAX(id_sous) FROM `soumission`)), '$file_name', '$destination')";
                         $req2 = mysqli_query($conn, $sql2);
 
-
+                        $fileName = "../admin/backup_queries.sql";
+                        $textToFile = $sql245 . ";\n";
+                        file_put_contents($fileName, $textToFile, FILE_APPEND);
                         if ($req1 && $req2) {
+                            
                             // unset($_SESSION['autorisation']);
                             $_SESSION['ajout_reussi'] = true;
                             header("location:reponse_etudiant.php?id_sous=$id_sous&id_matiere=$id_matiere&color=$color&id_semestre=$id_semestre");
@@ -324,7 +376,7 @@ if (mysqli_num_rows($req) == 0) {
                 <div class="col-md-2 " style="width:300px ;height:100px">
                     <div class="card">
                         <div class="card-body " style="padding:30px">
-                            <?php if (strtotime($row_date['date_fin']) - time() <= 600) { ?>
+                            <?php if (strtotime($row_date['date_fin']) - strtotime(gmdate('Y-m-d H:i:s')) <= 600) {  ?>
                                 <div class="countdown">
                                     <div class="box">
                                         <span class="num btn-gradient-danger" id="days"></span>
@@ -457,7 +509,8 @@ if (mysqli_num_rows($req) == 0) {
                                             $test = explode(".", $file_name);
 
                                             $test = explode(".", $file_name);
-                                            if ($test[1] == "pdf") {
+                                            $endIndex = $test[count($test) - 1];
+                                            if ($endIndex == "pdf") {
                                             ?>
                                                 &nbsp;<a class="btn btn-inverse-info btn-sm" href="open_file.php?file_name=<?= $file_name ?>&id_rep=<?= $id_rep ?>">Visualiser</a>
                                             <?php

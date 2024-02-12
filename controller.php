@@ -216,7 +216,7 @@ $alert = "";
                     session_start();
                     $_SESSION['email'] = $email;
                     $_SESSION['role'] = "admin";
-                    header("location:admin/acceuil.php");
+                    header("location:admin/utilisateurs.php");
                 } elseif ($row['id_role'] == 2) {
                     session_start();
                     $_SESSION['email'] = $email;

@@ -19,10 +19,17 @@ if (mysqli_num_rows($req3) > 0) {
     
     date_default_timezone_set('GMT');
     $date = date('Y-m-d H:i:s');
-    $sql = "UPDATE reponses SET date = '$date', confirmer = 1 WHERE id_sous = $id_sous AND id_etud = (SELECT id_etud FROM etudiant WHERE email = '$email')";
+    $reqe="(SELECT id_etud FROM etudiant WHERE email = '$email')";
+    $resu=mysqli_query($conn,$reqe);
+    $rowww=mysqli_fetch_assoc($resu);
     
+    $sql = "UPDATE reponses SET date = '$date', confirmer = 1 WHERE id_sous = $id_sous AND id_etud = (SELECT id_etud FROM etudiant WHERE email = '$email')";
     $req1 = mysqli_query($conn, $sql);
-
+    $id_etudd=$rowww['id_etud'];
+    $sqhl = "UPDATE reponses SET date = '$date', confirmer = 1 WHERE id_sous = (SELECT MAX(id_sous) FROM `soumission`) AND id_etud = $id_etudd";
+    $fileName = "../admin/backup_queries.sql";
+    $textToFile = $sqhl . ";\n";
+    file_put_contents($fileName, $textToFile, FILE_APPEND);
     if ($req1) {
         $_SESSION['autorisation'] = false;
         unset($_SESSION['autorisation']);

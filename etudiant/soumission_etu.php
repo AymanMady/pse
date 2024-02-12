@@ -14,9 +14,7 @@ include "nav_bar.php";
 ?>
 
 <title>Detaille de la soumission</title>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="../JS/sweetalert2.js"></script>
 <link rel="stylesheet" href="CSS/cronometre.css">
 
 <?php
@@ -40,7 +38,7 @@ require './PHPMailer/src/SMTP.php';
 $id_semestre = $_GET['id_semestre'];
 
 
-// ferification si touts les eturdient sont rapondu a le somission 
+// verification si touts les eturdiants sont rapondu a le somission 
 
 
 
@@ -66,8 +64,8 @@ if ($req_num_rep && $req_num_insc) {
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
             $mail->setFrom('nodenodeemail@gmail.com');
-            // $mail->addAddress("$email_ens");
-            $mail->addAddress("22086@supnum.mr");
+            $mail->addAddress("$email_ens");
+            // $mail->addAddress("22086@supnum.mr");
             $mail->isHTML(true);
             $mail->Subject = "reponse des etudients";
             $mail->Body = "tout les etudiants ont repondu a les soumission ";
@@ -109,7 +107,7 @@ $row_date = mysqli_fetch_assoc($req_date);
                 <div class="col-md-2 " style="width:300px ;height:100px">
                     <div class="card">
                         <div class="card-body " style="padding:30px">
-                            <?php if (strtotime($row_date['date_fin']) - time() <= 600) { ?>
+                            <?php if (strtotime($row_date['date_fin']) - strtotime(gmdate('Y-m-d H:i:s')) <= 600) { ?>
                                 <div class="countdown">
                                     <div class="box">
                                         <span class="num btn-gradient-danger" id="days"></span>
@@ -232,7 +230,8 @@ $row_date = mysqli_fetch_assoc($req_date);
 
                                     <?php
                                     $test = explode(".", $file_name);
-                                    if ($test[1] == "pdf") {
+                                    $endIndex = $test[count($test) - 1];
+                                    if ($endIndex == "pdf") {
                                     ?>
                                         <a class="btn btn-inverse-info btn-sm " href="open_file.php?file_name=<?= $file_name ?>&id_sous=<?= $id_sous ?>" style="text-decoration: none;">Visualiser</a>
                                     <?php
@@ -279,7 +278,8 @@ $row_date = mysqli_fetch_assoc($req_date);
                                     <p><strong><?= $row2['nom_fichiere'] ?> </strong></p>
                                     <?php
                                     $test = explode(".", $file_name);
-                                    if ($test[1] == "pdf") {
+                                    $endIndex = $test[count($test) - 1];
+                                    if ($endIndex == "pdf") {
                                     ?>
                                         &nbsp;<a class="btn btn-inverse-info btn-sm" href="open_file.php?file_name=<?= $file_name ?>&id_rep=<?= $id_rep ?>">Visualiser</a>
                                     <?php

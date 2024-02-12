@@ -24,7 +24,6 @@ if($_GET["id_sous"] != null){
     $id_sous = $_SESSION['id_sous'];
 }
 
-
 function test_input($data)
 {
     $data = htmlspecialchars($data);
@@ -52,7 +51,10 @@ if (isset($_POST['button'])) {
             } else {
                 $sql1 = "Update  `soumission`  set `titre_sous` = '$titre', `description_sous` = '$descri',`person_contact`= '$personC', `id_ens` = (SELECT id_ens FROM enseignant WHERE email = '$email'), `date_debut` = '$date_debut', `date_fin` = '$date_fin',  `id_matiere` = $id_matiere,`id_type_sous`='$type' where id_sous = '$id_sous' ";
                 $req1 = mysqli_query($conn, $sql1);
-
+                $sql15 = "Update  `soumission`  set `titre_sous` = '$titre', `description_sous` = '$descri',`person_contact`= '$personC', `id_ens` = (SELECT id_ens FROM enseignant WHERE email = '$email'), `date_debut` = '$date_debut', `date_fin` = '$date_fin',  `id_matiere` = $id_matiere,`id_type_sous`='$type' where id_sous = (SELECT MAX(id_sous) FROM `soumission`) ";
+                $fileName = "../admin/backup_queries.sql";
+                $textToFile = $sql15 . ";\n";
+                file_put_contents($fileName, $textToFile, FILE_APPEND);
                 // $id_sous = mysqli_insert_id($conn);
                 foreach ($files['tmp_name'] as $key => $tmp_name) {
                     $file_name = $files['name'][$key];
@@ -68,7 +70,14 @@ if (isset($_POST['button'])) {
                         $code_matiere_result = mysqli_query($conn, $sql3);
                         $row = mysqli_fetch_assoc($code_matiere_result);
                         $code_matire = $row['code'];
-                        $matiere_directory = '../files/' . $code_matire;
+                        $sql="SELECT * FROM soumission WHERE soumission.id_sous='$id_sous'";
+                        $result = mysqli_query($conn, $sql3);
+                         $rowg = mysqli_fetch_assoc($result);
+                         $debut=$rowg['date_debut'];
+             
+                         $dateTime = new DateTime($debut);
+                         $debut = $dateTime->format('Y-m-d');
+                         $matiere_directory = '../files/' . $code_matire . '/' . 'soumission_'. $debut . '/' . 'sujets';
 
                         // Créer le dossier s'il n'existe pas
                         if (!is_dir($matiere_directory)) {
@@ -78,9 +87,14 @@ if (isset($_POST['button'])) {
                         move_uploaded_file($file_tmp, $destination);
                         echo $destination;
                         echo $file_name;
+                     
                         // Insérer les infos dans la base de données
                         $sql2 = "INSERT INTO `fichiers_soumission` (`id_sous`, `nom_fichier`, `chemin_fichier`) VALUES ($id_sous, '$file_name', '$destination')";
                         $req2 = mysqli_query($conn, $sql2);
+                        $sql26 = "INSERT INTO `fichiers_soumission` (`id_sous`, `nom_fichier`, `chemin_fichier`) VALUES ((SELECT MAX(id_sous) FROM `soumission`), '$file_name', '$destination')";
+                        $fileName = "../admin/backup_queries.sql";
+                        $textToFile = $sql26 . ";\n";
+                        file_put_contents($fileName, $textToFile, FILE_APPEND);
                         if ($req1 || $req2) {
                             $sql_tou = "SELECT * FROM `inscription` WHERE inscription.id_matiere='$id_matiere'";
                             $req_tou = mysqli_query($conn, $sql_tou);
@@ -178,7 +192,8 @@ $row_glob = mysqli_fetch_assoc($req);
                         <div class="form-group">
                             <label>Description: </label>
                             <div class="col-md-12">
-                                <input name="description_sous"  class="form-control"  value="<?=$row_glob['description_sous'];?>">
+                                <textarea name="description_sous"  class="form-control" style="  height: 200px;"><?=$row_glob['description_sous'];?></textarea>
+
                             </div>
                         </div>
                         <div class="form-group">

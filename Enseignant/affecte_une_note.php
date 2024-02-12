@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 $email = $_SESSION['email'];
 if ($_SESSION["role"] != "ens") {
@@ -22,8 +21,6 @@ if (isset($_POST['fin']) && $_POST['Note'] <= 20 && $_POST['Note'] >= 0) {
 
 include "nav_bar.php";
 ?>
-
-
     <?php
 
     $sql = "select * from reponses ,etudiant, soumission where id_rep='$id_rep' and reponses.id_sous=soumission.id_sous and etudiant.id_etud=reponses.id_etud";

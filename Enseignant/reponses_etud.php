@@ -95,17 +95,17 @@ $row2 = mysqli_fetch_assoc($req2);
                             <h4 class="text-center">Description de la soumission</h4><br>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p > <?php echo "<strong>Titre :&nbsp; </strong>" . $row_sous['titre_sous']; ?></p>
+                                    <p> <?php echo "<strong>Titre :&nbsp; </strong>" . $row_sous['titre_sous']; ?></p>
                                     <div style="overflow: auto; height: 70px;">
-                                    <?php echo "<strong>Description :&nbsp; </strong>" . $row_sous['description_sous']; ?>
+                                        <?php echo "<strong>Description :&nbsp; </strong>" . $row_sous['description_sous']; ?>
                                     </div><br>
-                                    <p > <?php echo "<strong>Code de la matière :&nbsp; </strong>" . $row_sous['code']; ?></p>
+                                    <p> <?php echo "<strong>Code de la matière :&nbsp; </strong>" . $row_sous['code']; ?></p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <p > <?php echo "<strong>Date de début : &nbsp;</strong>" . $row_sous['date_debut']; ?></p>
-                                    <p ><?php echo "<strong>Date de fin :&nbsp; </strong>" . $row_sous['date_fin']; ?></p>
-                                    <p > <?php echo "<strong>Enseignant :&nbsp; </strong>" . $row_sous['nom'] . " " . $row_sous['prenom']; ?></p>
+                                    <p> <?php echo "<strong>Date de début : &nbsp;</strong>" . $row_sous['date_debut']; ?></p>
+                                    <p><?php echo "<strong>Date de fin :&nbsp; </strong>" . $row_sous['date_fin']; ?></p>
+                                    <p> <?php echo "<strong>Enseignant :&nbsp; </strong>" . $row_sous['nom'] . " " . $row_sous['prenom']; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -125,40 +125,43 @@ $row2 = mysqli_fetch_assoc($req2);
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body" style="display: flex ; justify-content: space-between;">
+                            <div>
+                                <a href="list_etudiant.php?id_matiere=<?= $row_sous['id_matiere'] ?>&id_sous=<?= $id_sous ?>" class="btn btn-gradient-primary">Liste des étudiants inscrits</a>
+                            </div>
 
-                <div class="card-body" style="display: flex ; justify-content: space-between;">
-                    <div>
-                        <a href="list_etudiant.php?id_matiere=<?= $row_sous['id_matiere'] ?>&id_sous=<?= $id_sous ?>" class="btn btn-gradient-primary">Liste des étudiants inscrits</a>
-                    </div>
+                            <?php if (mysqli_num_rows($req_affichage) > 0) { ?>
+                                <div>
+                                    <div class="col-sm-6 col-md-4 col-lg-3 float-end" data-bs-toggle="dropdown">
+                                        <i class="mdi mdi-dots-vertical" style="font-size: 35px; margin-right:30px;"></i>
+                                    </div>
+                                    <h5 class="dropdown-menu">
+                                        <a href="telecharger_tout.php?id_sous=<?= $id_sous ?>" class="dropdown-item">Télécharger tous les travaux</a>
+                                        <a href="exporter_note.php?id_sous=<?= $id_sous ?>&id_matiere=<?= $row_sous['id_matiere'] ?>" class="dropdown-item">Exporter les notes</a>
+                                        <form action="" method="POST">
+                                            <input type="submit" class="dropdown-item" value="Envoyer les Notes" name="enoyer_note">
+                                        </form>
+                                    </h5>
+                                </div>
+                            <?php
+                            }
 
-
-                    <?php if (mysqli_num_rows($req_affichage) > 0) { ?>
-                        <div>
-                            <a href="telecharger_tout.php?id_sous=<?= $id_sous ?>" class="btn btn-gradient-primary">Télécharger tous les travaux</a>
-                        </div>
-                        <div>
-                            <a href="exporter_note.php?id_sous=<?= $id_sous ?>&id_matiere=<?= $row_sous['id_matiere'] ?>" class="btn btn-primary">Exporter les notes</a>
-                        </div>
-                        <div>
-                            <form action="" method="POST">
-                                <input type="submit" class="btn btn-gradient-primary ml-25" value="Envoyer les Notes" name="enoyer_note">
-                            </form>
-                        </div>
-                    <?php
-                    }
-
-                    $req_detail = "SELECT soumission.id_sous ,etudiant.id_etud,etudiant.id_groupe  ,matricule,nom,prenom FROM 
+                            $req_detail = "SELECT soumission.id_sous ,etudiant.id_etud,etudiant.id_groupe  ,matricule,nom,prenom FROM 
                         soumission,etudiant,inscription WHERE   soumission.id_matiere = inscription.id_matiere and etudiant.id_etud = inscription.id_etud and soumission.id_sous= $id_sous;";
-                    $req = mysqli_query($conn, $req_detail);
-                    ?>
+                            $req = mysqli_query($conn, $req_detail);
+                            ?>
+                        </div>
+                    </div>
                 </div>
 
 
-                <div class="row">
-                    <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Les réponses des étudiants :</h4>
+                <div class="col-lg-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Les réponses des étudiants :</h4>
+                            <div class="table-responsive">
                                 <table id="example" class="table table-bordered" style="width:100%">
                                     <thead>
                                         <tr>
@@ -168,7 +171,7 @@ $row2 = mysqli_fetch_assoc($req2);
                                             <th>Date</th>
                                             <th>Statut</th>
                                             <th>Détails</th>
-                                            <th>note</th>
+                                            <th>Note</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -209,14 +212,14 @@ $row2 = mysqli_fetch_assoc($req2);
                                                                 $newNoteValue = floatval($_POST['note']);
                                                                 if ($newNoteValue > 20 || $newNoteValue < 0) {
                                                                     echo "<script>
-            Swal.fire({
-                title: 'Échec  !',
-                text: 'Veuillez donner une note entre 0 et 20 !',
-                icon: 'warning',
-                confirmButtonColor: '#3099d6',
-                confirmButtonText: 'OK'
-            });
-            </script>";
+                                                                    Swal.fire({
+                                                                        title: 'Échec  !',
+                                                                        text: 'Veuillez donner une note entre 0 et 20 !',
+                                                                        icon: 'warning',
+                                                                        confirmButtonColor: '#3099d6',
+                                                                        confirmButtonText: 'OK'
+                                                                    });
+                                                                    </script>";
                                                                 } else {
                                                                     // Get the hidden input value
                                                                     $rep = $_POST['pre'];

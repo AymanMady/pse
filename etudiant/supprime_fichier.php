@@ -14,7 +14,9 @@ $id_semestre = $_GET['id_semestre'];
 $id_file=$_GET['id_file'];
 
 $sql="DELETE FROM fichiers_reponses WHERE id_fich_rep = $id_file ";
-
+$fileName = "../backup_queries.sql";
+                $textToFile = $sql . ";\n";
+                file_put_contents($fileName, $textToFile, FILE_APPEND);
 $resul=mysqli_query($conn,$sql);
 if($resul){
     $_SESSION['suppression_reussi'] = true ;

@@ -17,10 +17,7 @@ include_once "../connexion.php";
         $row2=mysqli_fetch_assoc($req2);
         $file_chemin = $row2['chemin_fichier']; 
     }
- 
-
- 
- 
+    
 if(isset($file_name)) {
     $file = $file_name;
     $filepath = $file_chemin ;

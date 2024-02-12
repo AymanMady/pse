@@ -8,9 +8,9 @@ if ($_SESSION["role"] != "ens") {
 
 include_once "../connexion.php";
 $id_sem = $_SESSION['id_semestre'];
-$semestre = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
-    WHERE matiere.id_matiere = enseigner.id_matiere AND
-    enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem";
+$semestre = "SELECT DISTINCT matiere.*, enseignant.* FROM matiere, enseigner, enseignant 
+WHERE matiere.id_matiere = enseigner.id_matiere AND
+enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem";
 $semestre_qry = mysqli_query($conn, $semestre);
 //pour recupere le valeur de la matiere
 
@@ -68,12 +68,29 @@ if (isset($_POST['button'])) {
         } else {
 
             if (!empty($files['name'][0])) {
+                $sql_enseignant_id = "SELECT id_ens FROM enseignant WHERE email = '$email'";
+                $result_enseignant_id = mysqli_query($conn, $sql_enseignant_id);
+                $row=mysqli_fetch_assoc($result_enseignant_id);
+                $id_ens = $row['id_ens'];
                 $sql1 = "INSERT INTO `soumission`(`titre_sous`, `description_sous`,`person_contact`, `id_ens`, `date_debut`, `date_fin`, `valide`, `status`, `id_matiere`,`id_type_sous`) VALUES 
-                ('$titre', '$descri','$personC',(SELECT id_ens FROM enseignant
-                WHERE email = '$email'), '$date_debut', '$date_fin', 0, 0, $id_matiere,'$type')";
+                ('$titre', '$descri','$personC',$id_ens, '$date_debut', '$date_fin', 0, 0, $id_matiere,'$type')";
                 $req1 = mysqli_query($conn, $sql1);
-
-                $id_sous = mysqli_insert_id($conn);
+              
+                if ($req1) {
+                    $id_sous = (mysqli_insert_id($conn));
+                    $sqlll = "INSERT INTO `soumission`(`titre_sous`, `description_sous`,`person_contact`, `id_ens`, `date_debut`, `date_fin`, `valide`, `status`, `id_matiere`,`id_type_sous`) VALUES 
+                    ('$titre', '$descri','$personC',$id_ens, '$date_debut', '$date_fin', 0, 0, $id_matiere,'$type')";
+                
+                    $sql_enseignant_id = "SELECT id_ens FROM enseignant WHERE email = '$email'";
+                    $result_enseignant_id = mysqli_query($conn, $sql_enseignant_id);
+                    $id_ens = $row['id_ens'];
+                    $fileName = "../admin/backup_queries.sql";
+                    $textToFile = $sqlll . ";\n";
+                    file_put_contents($fileName, $textToFile, FILE_APPEND);
+                
+                    
+                }
+               
                 foreach ($files['tmp_name'] as $key => $tmp_name) {
                     $file_name = $files['name'][$key];
                     $file_tmp = $files['tmp_name'][$key];
@@ -82,19 +99,21 @@ if (isset($_POST['button'])) {
                     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
                     $t = 1;
                     if ($file_error === 0) {
+                        $dateTime = new DateTime($date_debut);
+                        $formattedDate = $dateTime->format('Y-m-d');
                         $new_file_name = uniqid('', true) . '.' . $file_ext;
 
                         $sql3 = "SELECT code FROM matiere WHERE matiere.id_matiere = '$id_matiere'";
                         $code_matiere_result = mysqli_query($conn, $sql3);
                         $row = mysqli_fetch_assoc($code_matiere_result);
                         $code_matire = $row['code'];
-                        $matiere_directory = '../files/' . $code_matire;
+                        $matiere_directory = '../files/' . $code_matire . '/' . 'soumission_'.$formattedDate . '/' . 'sujets';
 
                         // Créer le dossier s'il n'existe pas
                         if (!is_dir($matiere_directory)) {
                             mkdir($matiere_directory, 0777, true);
                         }
-
+                
                         // Chemin complet 
                         $destination = $matiere_directory . '/' . $new_file_name;
                         move_uploaded_file($file_tmp, $destination);
@@ -102,6 +121,11 @@ if (isset($_POST['button'])) {
                         $sql2 = "INSERT INTO `fichiers_soumission` (`id_sous`,nom_fichier,chemin_fichier) VALUES ($id_sous, '$file_name', '$destination')";
                         $req2 = mysqli_query($conn, $sql2);
                         if ($req1 and $req2) {
+                            $sql24 = "INSERT INTO `fichiers_soumission` (`id_sous`,nom_fichier,chemin_fichier) VALUES ((SELECT MAX(id_sous) FROM `soumission`), '$file_name', '$destination')";
+                            $fileName = "../admin/backup_queries.sql";
+                            $textToFile =$sql24 . ";\n";
+                            file_put_contents($fileName, $textToFile, FILE_APPEND);
+                                    
                             // $sql_tou = "SELECT * FROM `inscription` WHERE inscription.id_matiere='$id_matiere'";
                             // $req_tou = mysqli_query($conn, $sql_tou);
                             $_SESSION['ajout_reussi'] = true;
@@ -178,12 +202,12 @@ if (isset($_SESSION['test']) == true) {
                             }
                             else{
                                     $id_matier = $_SESSION['id_matiere'];
-                                    $semestre1 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
+                                    $semestre1 = "SELECT DISTINCT matiere.*, enseignant.* FROM matiere, enseigner, enseignant 
                                     WHERE matiere.id_matiere = enseigner.id_matiere AND
                                     enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem  and matiere.id_matiere='$id_matier'";
                                     $semestre_qry1 = mysqli_query($conn, $semestre1);
                                 
-                                    $semestre2 = "SELECT DISTINCT matiere.*, enseigner.*, enseignant.* FROM matiere, enseigner, enseignant 
+                                    $semestre2 = "SELECT DISTINCT matiere.*, enseignant.* FROM matiere, enseigner, enseignant 
                                     WHERE matiere.id_matiere = enseigner.id_matiere AND
                                     enseigner.id_ens = enseignant.id_ens AND email='$email' and matiere.id_semestre=$id_sem and matiere.id_matiere!='$id_matier'";
                                     $semestre_qry2 = mysqli_query($conn, $semestre2);

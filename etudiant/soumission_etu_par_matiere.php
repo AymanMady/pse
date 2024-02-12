@@ -60,14 +60,14 @@ $id_semestre = $_GET['id_semestre'];
             date_default_timezone_set('GMT');
             $date = date('Y-m-d H:i:s');
 
-            $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status in (1,0) and date_debut <= '$date' ";
+            $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status in (1,0) and date_debut <= '$date' ORDER BY date_debut DESC";
 
             if (isset($_POST['cloture'])) {
-                $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and  status=1";
+                $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and  status=1 ORDER BY date_debut DESC";
                 $enline = "outline-dark";
                 $cloture = "dark";
             } else if (isset($_POST['enline'])) {
-                $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status=0";
+                $req_detail = "SELECT * FROM soumission inner join matiere using(id_matiere) WHERE id_matiere = $id_matiere and status=0 ORDER BY date_debut DESC";
 
                 $enline = "dark";
                 $cloture = "outline-dark";
