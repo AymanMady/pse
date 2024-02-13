@@ -13,7 +13,7 @@ $file=$_GET['file_name'];
 $sql="DELETE FROM fichiers_soumission WHERE fichiers_soumission.nom_fichier='$file'";
 $resul=mysqli_query($conn,$sql);
 $sql111="DELETE FROM fichiers_soumission WHERE fichiers_soumission.nom_fichier='$file'";
-$fileName = "../backup_queries.sql";
+$fileName = "../admin/backup_queries.sql";
 $textToFile = $sql111 . ";\n";
 file_put_contents($fileName, $textToFile, FILE_APPEND);
 if($resul){

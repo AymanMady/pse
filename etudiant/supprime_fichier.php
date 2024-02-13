@@ -12,9 +12,12 @@ $id_matiere = $_GET['id_matiere'];
 $color = $_GET['color'];
 $id_semestre = $_GET['id_semestre'];
 $id_file=$_GET['id_file'];
-
-$sql="DELETE FROM fichiers_reponses WHERE id_fich_rep = $id_file ";
-$fileName = "../backup_queries.sql";
+$nom_file="SELECT nom_fichiere FROM `fichiers_reponses` WHERE id_fich_rep = $id_file ";
+$nom_file1=mysqli_query($conn,$nom_file);
+$row_nom_file=mysqli_fetch_assoc($nom_file1);
+$nom_file2=$row_nom_file['nom_fichiere'];
+$sql="DELETE FROM fichiers_reponses WHERE nom_fichiere = '$nom_file2' ";
+$fileName = "../admin/backup_queries.sql";
                 $textToFile = $sql . ";\n";
                 file_put_contents($fileName, $textToFile, FILE_APPEND);
 $resul=mysqli_query($conn,$sql);
