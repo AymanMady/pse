@@ -1,0 +1,15 @@
+[
+    {
+        "id_sous": "3",
+        "titre_sous": "Examen Pratique R&eacute;seaux",
+        "description_sous": "",
+        "person_contact": "",
+        "id_ens": "80",
+        "date_debut": "2024-01-26 11:42:00",
+        "date_fin": "2024-01-26 12:50:00",
+        "valide": "0",
+        "status": "0",
+        "id_matiere": "22",
+        "id_type_sous": "1"
+    }
+]
