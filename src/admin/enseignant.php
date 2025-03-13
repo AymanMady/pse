@@ -1,17 +1,23 @@
-
 <?php
-    session_start() ;
-    
-$email = $_SESSION['email'];
-if($_SESSION["role"]!="admin"){
-    header("location:authentification.php");
+session_start();
+
+// Vérifie si l'utilisateur est connecté
+if (!isset($_SESSION['email']) || !isset($_SESSION['role'])) {
+    header("location:../authentification.php");
+    exit;
 }
+
+$email = $_SESSION['email'];
+if ($_SESSION['role'] != "admin") {
+    header("location:../authentification.php");
+    exit;
+}
+
 include_once "../connexion.php";
 include "nav_bar.php";
 
-
-$req1 = "SELECT * FROM enseignant  ORDER BY nom ASC ;";
-$req = mysqli_query($conn , $req1);
+$req1 = "SELECT * FROM enseignant ORDER BY nom ASC;";
+$req = mysqli_query($conn, $req1);
 ?>
 
 <div class="main-panel">

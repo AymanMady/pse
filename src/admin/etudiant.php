@@ -1,21 +1,27 @@
-
-
 <?php
 session_start();
-$email = $_SESSION['email'];
-if ($_SESSION["role"] != "admin") {
+
+// Vérifie si l'utilisateur est connecté
+if (!isset($_SESSION['email']) || !isset($_SESSION['role'])) {
     header("location:../authentification.php");
+    exit; // Pour éviter l'exécution du reste du code
 }
+
+$email = $_SESSION['email'];
+if ($_SESSION['role'] != "admin") {
+    header("location:../authentification.php");
+    exit;
+}
+
 include_once "../connexion.php";
 include_once 'nav_bar.php';
 
 $req = mysqli_query($conn, "SELECT * FROM etudiant INNER JOIN semestre USING(id_semestre) ORDER by matricule asc;");
-
 ?>
 
 
   
-    <title>Gestion des étudiants</title>
+<title>Gestion des étudiants</title>
 
 <div class="main-panel">
     <div class="content-wrapper">

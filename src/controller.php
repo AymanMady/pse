@@ -1,24 +1,31 @@
+<?php
+ob_start(); // Active le buffer de sortie
+session_start();
+$alert = "";
+include_once("connexion.php");
+$errors = [];
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Assure-toi qu'aucun espace ou texte n'est sorti avant ce bloc PHP
+?>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="search.css">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"> -->
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-    <meta content="" name="descriptison">
-    <meta content="" name="keywords">
-  
-    <link rel="stylesheet" href=".assets/vendors/mdi/css/materialdesignicons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/images/favicon.ico" />
 </head>
 
 
 
-  <script>
+<script>
     $(document).ready(function() {
   $("#success-alert").hide();
 
@@ -31,20 +38,10 @@ $('#success-alert .close').click(function() {
   </script>
 <body>
     
-
 <?php
-$alert = "";
-    include_once("connexion.php");
-    // Connection Created Successfully
-
-    // Store All Errors
-    $errors = [];
-
-
 
         //verifier:
             if(isset($_POST['verifier'])){
-                session_start();
                     
                if($_SESSION['codde']!=4){
                 $email = $_POST['email'];
@@ -56,21 +53,18 @@ $alert = "";
                if (mysqli_num_rows($res) > 0) {
                     $errors['login'] = 'L’e-mail est déjà pris !';
                 }else{
-                    session_start();
                     $role=$_SESSION['codde'];
                     $_SESSION['codee'] =$role;
                     if(isset($role) && isset($email)){
                         if($role == 3){
-                            session_start();
                             $_SESSION['nom']= "etudiant";
                             $_SESSION['email']= $email; 
                             header('location:registration.php');
                         }
                         else if($role == 2){
-                            session_start();
                             $_SESSION['nom']= "enseignant";
                             $_SESSION['email']= $email;   
-                            header('location: registration.php');    
+                            header('location:registration.php');    
                         }
                         }else {
                         $message = "Veuillez remplir tous les champs !";
@@ -93,7 +87,6 @@ $alert = "";
         $data=strtolower($data) ;
     return $data ;
     }
-    session_start();
     $role = $_SESSION['controller'];
     $email = $_SESSION['email'];
 
@@ -156,7 +149,7 @@ $alert = "";
                                 </div>';
 
                     $_SESSION['message'] = $message;
-                    header('location: verifier_code.php');
+                    header('location:verifier_code.php');
                 } 
                     else {
                     $errors['otp_errors'] = 'Échec lors de l’envoi du code!';
@@ -170,7 +163,6 @@ $alert = "";
 
     // if Verify Button Clicked
     if (isset($_POST['verify'])) {
-        session_start();
         $_SESSION['message'] = "";
         $code=$_SESSION['code'];
         // $otp = mysqli_real_escape_string($conn, $_POST['otp']);
@@ -185,7 +177,7 @@ $alert = "";
        
 
             if ($insertInfo) {
-                header('location: authentification.php');
+                header('location:authentification.php');
                 $_SESSION['cree_reussi'] = true;
             } else {
                 $errors['db_error'] = "Impossible d’insérer des données dans la base de données!";
@@ -213,18 +205,15 @@ $alert = "";
             $status = $row['active'];
             if ($status == 1) {
                 if ($row['id_role'] == 1) {
-                    session_start();
                     $_SESSION['email'] = $email;
                     $_SESSION['role'] = "admin";
                     header("location:admin/utilisateurs.php");
                 } elseif ($row['id_role'] == 2) {
-                    session_start();
                     $_SESSION['email'] = $email;
                     $_SESSION['role'] = "ens";
                     $_SESSION['mise_a_jour']=false;
                     header("location:Enseignant/choix_semester.php");
                 } elseif ($row['id_role'] == 3) {
-                    session_start();
                     $_SESSION['email'] = $email;
                     $_SESSION['role'] = "etudiant";
                     header("location:etudiant/choix_semestre.php");
@@ -283,7 +272,7 @@ $alert = "";
                         $message = "Nous avons envoyé un code de vérification à votre adresse e-mail <br> $email";
 
                         $_SESSION['message'] = $message;
-                        header('location: verifyEmail.php');
+                        header('location:verifyEmail.php');
                     } else {
                         $errors['otp_errors'] =  '<div class="alert alert-danger row-md-15" id="success-alert">
                                                     <span aria-hidden="true">&times;</span>
@@ -310,7 +299,7 @@ if(isset($_POST['verifyEmail'])){
         if(mysqli_num_rows($runVerifyQuery) > 0){
             $newQuery = "UPDATE utilisateur SET code = 0";
             $run = mysqli_query($conn,$newQuery);
-            header("location: newPassword.php");
+            header("location:newPassword.php");
         }else{
             $errors['verification_error'] = "Code de vérification non valide";
         }
@@ -336,7 +325,7 @@ if(isset($_POST['changePassword'])){
             $updatePass = mysqli_query($conn, $updatePassword) or die("Query Failed");
            // session_unset($email);
             session_destroy();
-            header('location: authentification.php');
+            header('location:authentification.php');
         }
     }
 }
@@ -376,3 +365,7 @@ if(isset($_POST['changePassword'])){
 
 </body>
 </html>
+
+<?php
+ob_start(); // Active le buffer de sortie
+?>

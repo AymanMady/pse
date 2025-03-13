@@ -1,27 +1,23 @@
-<title>Les matiéres</title>
 <?php
-session_start() ;
-$email = $_SESSION['email'];
-if($_SESSION["role"]!="admin"){
+session_start();
+
+// Vérification sécurisée de la session
+if (!isset($_SESSION['email']) || !isset($_SESSION['role']) || $_SESSION['role'] != "admin") {
     header("location:authentification.php");
+    exit;
 }
 
 include "nav_bar.php";
 include_once "../connexion.php";
-$searched = false;
 
-
-$matiere_query = "SELECT * FROM matiere INNER JOIN semestre USING(id_semestre) order by code desc"; 
-
+$matiere_query = "SELECT * FROM matiere INNER JOIN semestre USING(id_semestre) ORDER BY code DESC";
+$matiere_result = mysqli_query($conn, $matiere_query);
 ?>
 
+<!-- sweetalert2 links -->
+<script src="../JS/sweetalert2.js"></script>
 
-    <!-- sweetalert2 links -->
-
-    <script src="../JS/sweetalert2.js"></script>
-
-
-
+<title>Les matiéres</title>
 <div class="main-panel">
           <div class="content-wrapper">
             <div class="page-header">
